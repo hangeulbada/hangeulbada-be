@@ -1,4 +1,4 @@
-# 2024-1 Capstone Design Project - 한글바다 Back-End Repository
+# 2024-1 Capstone Design Project - 한글바다
 ## Spring boot
 ### 패키지 구조
 도메인형
