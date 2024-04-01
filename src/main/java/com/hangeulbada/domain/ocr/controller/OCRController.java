@@ -17,7 +17,7 @@ public class OCRController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submit(@RequestBody OCRRequest ocrRequest) {
-        ocrService.submit(ocrRequest.getStudentId(), ocrRequest.getOcrImage());
-        return ResponseEntity.ok().build();
+        String ans = ocrService.start();
+        return ResponseEntity.ok(ans);
     }
 }
