@@ -20,4 +20,10 @@ public class OCRController {
         String ans = ocrService.start();
         return ResponseEntity.ok(ans);
     }
+    @PostMapping("/submit2")
+    public ResponseEntity<?> submit2() {
+        String ans = ocrService.tts();
+
+        return ResponseEntity.ok(ans);
+    }
 }
