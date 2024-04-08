@@ -32,7 +32,8 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-application*
+application*.properties
+application*.yml
 
 
 ### VS Code ###
