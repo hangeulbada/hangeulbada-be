@@ -32,7 +32,8 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-application.properties
+application*
+
 
 ### VS Code ###
 .vscode/
