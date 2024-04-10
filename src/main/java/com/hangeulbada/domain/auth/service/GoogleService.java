@@ -8,13 +8,12 @@ import com.hangeulbada.domain.auth.dto.LoginResponse;
 import com.hangeulbada.domain.auth.dto.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import com.hangeulbada.domain.auth.dto.User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -25,57 +24,50 @@ import java.util.HashMap;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoService {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class GoogleService {
 
-    private final UserRepository userRepository;
     private final AuthTokensGenerator authTokensGenerator;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String googleClientSecret;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String redirectUri;
+    public LoginResponse googleLogin(String code){
+        // code로 access token 요청
+        String accessToken = getGoogleAccessToekn(code, googleRedirectUri);
+        log.info("accessToken: "+accessToken);
+        // access token으로 사용자 정보 요청
+        HashMap<String, Object> userInfo = getGoogleUserInfo(accessToken);
+        log.info("userInfo: "+userInfo);
 
-
-
-    public LoginResponse kakaoLogin(String code, String currentDomain) {
-        //0. 동적으로 redirect URI 선택
-        String redirectUri="http://localhost:5943/oauth2/kakao";
-
-//                selectRedirectUri(currentDomain);
-
-        // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(code, redirectUri);
-
-        // 2. 토큰으로 카카오 API 호출
-        HashMap<String, Object> userInfo= getKakaoUserInfo(accessToken);
-
-        //3. 카카오ID로 회원가입 & 로그인 처리
-        LoginResponse kakaoUserResponse= kakaoUserLogin(userInfo);
-        log.info("kakaoUserResponse: "+kakaoUserResponse);
-        return kakaoUserResponse;
+        // google id로 회원가입, 로그인 처리
+        LoginResponse googleUserResponse = googleUserLogin(userInfo);
+        log.info("googleUserResponse: "+googleUserResponse);
+        return googleUserResponse;
     }
 
-    private String getAccessToken(String code, String redirectUri) {
-
-        // HTTP Header 생성
+    // 인가 code로 accesstoken 요청
+    private String getGoogleAccessToekn(String code, String googleRedirectUri){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUri);
+        body.add("client_id", googleClientId);
+        body.add("client_secret", googleClientSecret);
+        body.add("redirect_uri", googleRedirectUri);
         body.add("code", code);
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://kauth.kakao.com/oauth/token",
+                "https://oauth2.googleapis.com/token",
                 HttpMethod.POST,
                 kakaoTokenRequest,
                 String.class
@@ -93,24 +85,25 @@ public class KakaoService {
         return jsonNode.get("access_token").asText(); //토큰 전송
     }
 
-    private HashMap<String, Object> getKakaoUserInfo(String accessToken) {
-        log.info("getKakaoUserInfo");
+    // accesstoken으로 사용자 정보 요청
+    private HashMap<String, Object> getGoogleUserInfo(String accessToken) {
+        log.info("getGoogleUserInfo");
         HashMap<String, Object> userInfo= new HashMap<String,Object>();
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
+                "https://www.googleapis.com/oauth2/v1/userinfo",
+                HttpMethod.GET,
                 kakaoUserInfoRequest,
                 String.class
         );
+        log.info("response: "+response);
 
         // responseBody에 있는 정보를 꺼냄
         String responseBody = response.getBody();
@@ -124,41 +117,40 @@ public class KakaoService {
         }
 
         log.info("jsonNode: "+jsonNode);
-        Long id = jsonNode.get("id").asLong();
-//        String email = jsonNode.get("kakao_account").get("email").asText();
-//        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String id = String.valueOf(jsonNode.get("id"));
+        String email = jsonNode.get("email").asText();
+        String name = jsonNode.get("name").asText();
 
         userInfo.put("id",id);
-//        userInfo.put("email",email);
-//        userInfo.put("nickname",nickname);
+        userInfo.put("email",email);
+        userInfo.put("name",name);
 
-        log.info("userInfo: "+userInfo);
         return userInfo;
     }
 
-    private LoginResponse kakaoUserLogin(HashMap<String, Object> userInfo){
+    // 사용자 정보로 회원가입, 로그인 처리
+    private LoginResponse googleUserLogin(HashMap<String, Object> userInfo) {
+        log.info("googleUserLogin");
+        String uid = (String) userInfo.get("id");
+        String email = (String) userInfo.get("email");
+        String name = (String) userInfo.get("name");
 
-        log.info("kakaoUserLogin");
+        User googleUser = userRepository.findByUid(uid)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .uid(uid)
+                            .email(email)
+                            .name(name)
+                            .loginType("google")
+                            .build();
+                    return userRepository.save(newUser);
+                });
 
-        Long uid= Long.valueOf(userInfo.get("id").toString());
-        log.info("uid: "+uid);
-//        String kakaoEmail = userInfo.get("email").toString();
-//        String nickName = userInfo.get("nickname").toString();
-
-//        User kakaoUser = userRepository.findByUid(uid);
-//
-//        if (kakaoUser == null) {    //회원가입
-//            kakaoUser= new User();
-//            kakaoUser.setUid(uid);
-////            kakaoUser.setNickname(nickName);
-//
-//            kakaoUser.setLoginType("kakao");
-////            userRepository.save(kakaoUser);
-//        }
-        //토큰 생성
-        AuthTokens token=authTokensGenerator.generate(uid.toString());
+        AuthTokens token=authTokensGenerator.generate((String) userInfo.get("id"));
 
         log.info("token: "+token.toString());
-        return new LoginResponse(uid,"nickName","emaillll",token);
+        return new LoginResponse(googleUser.getId(),googleUser.getName(),googleUser.getEmail(), token);
+
+
     }
 }
