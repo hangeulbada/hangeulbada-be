@@ -1,6 +1,10 @@
 server:
   port: 5943
 
+custom:
+  jwt:
+    secretKey: "secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey"
+
 spring:
   application:
     name: hangeulbada
