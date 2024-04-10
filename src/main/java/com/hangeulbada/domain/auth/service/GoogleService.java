@@ -143,9 +143,10 @@ public class GoogleService {
                             .name(name)
                             .loginType("google")
                             .build();
+                    log.info("newUser: "+newUser);
                     return userRepository.save(newUser);
                 });
-
+        log.info("googleUser: "+googleUser);
         AuthTokens token=authTokensGenerator.generate((String) userInfo.get("id"));
 
         log.info("token: "+token.toString());

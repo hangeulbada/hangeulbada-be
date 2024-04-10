@@ -38,7 +38,7 @@ dependencies {
 
     // login
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 //    runtimeOnly 'com.h2database:h2'

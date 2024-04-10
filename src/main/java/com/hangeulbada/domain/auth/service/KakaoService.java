@@ -159,6 +159,6 @@ public class KakaoService {
         AuthTokens token=authTokensGenerator.generate(uid.toString());
 
         log.info("token: "+token.toString());
-        return new LoginResponse(uid,"nickName","emaillll",token);
+        return new LoginResponse("uid","nickName","emaillll",token);
     }
 }
