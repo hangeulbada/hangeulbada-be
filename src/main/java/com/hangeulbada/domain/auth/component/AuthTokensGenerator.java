@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.auth.service;
+package com.hangeulbada.domain.auth.component;
 
 import com.hangeulbada.domain.auth.dto.AuthTokens;
 import lombok.RequiredArgsConstructor;

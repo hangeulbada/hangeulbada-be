@@ -1,7 +1,7 @@
 package com.hangeulbada.global.config;
 
-import com.hangeulbada.domain.auth.service.JwtAuthFilter;
-import com.hangeulbada.domain.auth.service.JwtTokenProvider;
+import com.hangeulbada.domain.auth.jwt.JwtAuthFilter;
+import com.hangeulbada.domain.auth.component.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

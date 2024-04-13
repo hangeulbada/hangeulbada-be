@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.auth.service;
+package com.hangeulbada.domain.auth.component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

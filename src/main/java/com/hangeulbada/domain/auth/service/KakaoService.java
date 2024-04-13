@@ -3,9 +3,11 @@ package com.hangeulbada.domain.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hangeulbada.domain.auth.component.AuthTokensGenerator;
+import com.hangeulbada.domain.auth.component.JwtTokenProvider;
 import com.hangeulbada.domain.auth.dto.AuthTokens;
 import com.hangeulbada.domain.auth.dto.LoginResponse;
-import com.hangeulbada.domain.auth.dto.UserRepository;
+import com.hangeulbada.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -159,6 +161,6 @@ public class KakaoService {
         AuthTokens token=authTokensGenerator.generate(uid.toString());
 
         log.info("token: "+token.toString());
-        return new LoginResponse("uid","nickName","emaillll",token);
+        return new LoginResponse("uid","nickName","emaillll",null,null);
     }
 }

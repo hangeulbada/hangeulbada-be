@@ -1,5 +1,6 @@
-package com.hangeulbada.domain.auth.service;
+package com.hangeulbada.domain.auth.jwt;
 
+import com.hangeulbada.domain.auth.component.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

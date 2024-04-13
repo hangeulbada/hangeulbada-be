@@ -3,9 +3,12 @@ package com.hangeulbada.domain.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hangeulbada.domain.auth.component.AuthTokensGenerator;
 import com.hangeulbada.domain.auth.dto.AuthTokens;
 import com.hangeulbada.domain.auth.dto.LoginResponse;
-import com.hangeulbada.domain.auth.dto.UserRepository;
+import com.hangeulbada.domain.auth.dto.SignupResponse;
+import com.hangeulbada.domain.auth.dto.User;
+import com.hangeulbada.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +16,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import com.hangeulbada.domain.auth.dto.User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,7 +39,29 @@ public class GoogleService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
-    public LoginResponse googleLogin(String code){
+    public LoginResponse googleSignup(SignupResponse signupResponse){
+
+        log.info("googleSignup");
+        String uid = (String) signupResponse.getUid();
+        String email = (String) signupResponse.getEmail();
+        String name = (String) signupResponse.getName();
+        String role = (String) signupResponse.getRole();
+
+        // User 데이터베이스에 저장
+        User newUser = User.builder()
+                .uid(uid)
+                .email(email)
+                .name(name)
+                .role(role)
+                .build();
+        log.info("newUser: "+newUser);
+        userRepository.save(newUser);
+
+        AuthTokens token=authTokensGenerator.generate(uid);
+        return new LoginResponse(newUser.getUid(),newUser.getName(),newUser.getEmail(), newUser.getRole(), token);
+    }
+
+    public LoginResponse googleOauth2(String code){
         // code로 access token 요청
         String accessToken = getGoogleAccessToekn(code, googleRedirectUri);
         log.info("accessToken: "+accessToken);
@@ -45,9 +70,25 @@ public class GoogleService {
         log.info("userInfo: "+userInfo);
 
         // google id로 회원가입, 로그인 처리
-        LoginResponse googleUserResponse = googleUserLogin(userInfo);
-        log.info("googleUserResponse: "+googleUserResponse);
-        return googleUserResponse;
+        return googleUserLogin(userInfo);
+    }
+
+    LoginResponse googleUserLogin(HashMap<String, Object> userInfo) {
+        log.info("googleUserLogin");
+        String uid = (String) userInfo.get("uid");
+
+        // 이미 가입된 회원인지 확인
+        Optional<User> googleUser = userRepository.findByUid(uid);
+        if(googleUser.isPresent()){
+            log.info("googleUser: "+googleUser.get());
+            AuthTokens token=authTokensGenerator.generate(uid);
+            return new LoginResponse(googleUser.get().getId(),googleUser.get().getName(),googleUser.get().getEmail(), googleUser.get().getRole(), token);
+        }
+        // 가입되지 않은 회원
+        else{
+            return new LoginResponse(userInfo.get("uid").toString(),userInfo.get("name").toString(),userInfo.get("email").toString(), null, null);
+        }
+
     }
 
     // 인가 code로 accesstoken 요청
@@ -117,11 +158,11 @@ public class GoogleService {
         }
 
         log.info("jsonNode: "+jsonNode);
-        String id = String.valueOf(jsonNode.get("id"));
+        String uid = jsonNode.get("id").asText();
         String email = jsonNode.get("email").asText();
         String name = jsonNode.get("name").asText();
 
-        userInfo.put("id",id);
+        userInfo.put("uid",uid);
         userInfo.put("email",email);
         userInfo.put("name",name);
 
@@ -129,29 +170,7 @@ public class GoogleService {
     }
 
     // 사용자 정보로 회원가입, 로그인 처리
-    private LoginResponse googleUserLogin(HashMap<String, Object> userInfo) {
-        log.info("googleUserLogin");
-        String uid = (String) userInfo.get("id");
-        String email = (String) userInfo.get("email");
-        String name = (String) userInfo.get("name");
-
-        User googleUser = userRepository.findByUid(uid)
-                .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .uid(uid)
-                            .email(email)
-                            .name(name)
-                            .loginType("google")
-                            .build();
-                    log.info("newUser: "+newUser);
-                    return userRepository.save(newUser);
-                });
-        log.info("googleUser: "+googleUser);
-        AuthTokens token=authTokensGenerator.generate((String) userInfo.get("id"));
-
-        log.info("token: "+token.toString());
-        return new LoginResponse(googleUser.getId(),googleUser.getName(),googleUser.getEmail(), token);
 
 
-    }
+
 }
