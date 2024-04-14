@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class OCRRequest {
-    private int studentId;
+    private Long studentUid;
     private String ocrImage;
 }

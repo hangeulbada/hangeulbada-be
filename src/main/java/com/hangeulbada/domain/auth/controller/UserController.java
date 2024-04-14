@@ -4,8 +4,11 @@ import com.hangeulbada.domain.auth.dto.LoginResponse;
 import com.hangeulbada.domain.auth.dto.SignupResponse;
 import com.hangeulbada.domain.auth.service.GoogleService;
 import com.hangeulbada.domain.auth.service.KakaoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +21,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Api(tags = {"유저 API"})
+@Tag(name = "Google OAuth2", description = "구글 로그인/회원가입 API")
 public class UserController {
 
     private final KakaoService kakaoService;
@@ -40,8 +43,14 @@ public class UserController {
 //    }
     @ResponseBody
     @GetMapping("/login/oauth2/code/google")
-    @ApiOperation(value = "웹 구글 로그인", notes = "웹 프론트 버전 구글 로그인")
-    public ResponseEntity<LoginResponse> googleRedirectUri(@RequestParam String code) {
+    @Operation(summary = "구글 로그인", description = "구글 로그인 후 redirect되는 back url")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인 실패<br>message=\"로그인 실패\"<br>role 선택 후 회원가입(/login/oauth2/code/google/signup) 필요")
+    })
+    public ResponseEntity<LoginResponse> googleRedirectUri(
+            @Parameter(description = "구글 로그인 후 리다이렉트 URI로 전달받은 code") @RequestParam String code)
+    {
         try {
             log.info("code: "+code);
             LoginResponse response = googleService.googleOauth2(code);
@@ -60,15 +69,16 @@ public class UserController {
     }
 
     @ResponseBody
-    @ApiOperation(value = "웹 구글 회원 가입", notes = "웹 프론트 버전 구글 회원 가입")
+    @Operation(summary = "구글 회원가입", description = "구글 로그인 시 response 했던 정보에서 role 선택 후 회원가입")
     @PostMapping("/login/oauth2/code/google/signup")
-    public ResponseEntity<LoginResponse> googleSignup(SignupResponse signupResponse) {
-        try {
-            log.info("LoginResponse: "+signupResponse);
-            return ResponseEntity.ok(googleService.googleSignup(signupResponse));
-        } catch (NoSuchElementException e) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원가입 성공")
+    })
 
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Not Found");
-        }
+    public ResponseEntity<LoginResponse> googleSignup(@Parameter(description = "uid, name, email, role 필요") @RequestParam SignupResponse signupResponse) {
+
+        log.info("LoginResponse: "+signupResponse);
+        return ResponseEntity.ok(googleService.googleSignup(signupResponse));
+
     }
 }

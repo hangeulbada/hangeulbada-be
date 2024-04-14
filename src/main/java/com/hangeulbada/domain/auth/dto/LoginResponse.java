@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LoginResponse {
-    private String uid;
-    private String name;
-    private String email;
-    private String role;
-    private AuthTokens token;
-    private String message;
+    private String uid="string uid";
+    private String name="name";
+    private String email="email";
+    private String role="teacher or student";
+    private AuthTokens token=new AuthTokens();
+    private String message="401=로그인 실패";
 
     public LoginResponse(String uid, String name, String email, String role, AuthTokens token){
         this.uid = uid;
