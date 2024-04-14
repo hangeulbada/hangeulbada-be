@@ -3,7 +3,6 @@ package com.hangeulbada.domain.auth.controller;
 import com.hangeulbada.domain.auth.dto.LoginResponse;
 import com.hangeulbada.domain.auth.dto.SignupResponse;
 import com.hangeulbada.domain.auth.service.GoogleService;
-import com.hangeulbada.domain.auth.service.KakaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +23,6 @@ import java.util.NoSuchElementException;
 @Tag(name = "Google OAuth2", description = "구글 로그인/회원가입 API")
 public class UserController {
 
-    private final KakaoService kakaoService;
     private final GoogleService googleService;
 
     //web 버전
@@ -75,7 +73,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
 
-    public ResponseEntity<LoginResponse> googleSignup(@Parameter(description = "uid, name, email, role 필요") @RequestParam SignupResponse signupResponse) {
+    public ResponseEntity<LoginResponse> googleSignup(
+            @RequestBody SignupResponse signupResponse) {
 
         log.info("LoginResponse: "+signupResponse);
         return ResponseEntity.ok(googleService.googleSignup(signupResponse));
