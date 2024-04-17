@@ -1,18 +1,17 @@
-package com.hangeulbada.domain.group.repository;
+package com.hangeulbada.domain.auth.dto;
 
-import org.springframework.data.annotation.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
-@Getter@Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class User {
+public class UserDTO{
     @Id
     private String id;
     private String uid;
     private String email;
     private String name;
     private String role = "undefined";
-    private String loginType;
 }

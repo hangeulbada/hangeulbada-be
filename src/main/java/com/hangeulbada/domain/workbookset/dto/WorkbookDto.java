@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
-@Schema(
-        description = "WorkbookDto Model"
-)
+@Schema(description = "WorkbookDto Model")
 public class WorkbookDto {
     private String id;
 //    @NotEmpty
