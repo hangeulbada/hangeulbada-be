@@ -1,11 +1,10 @@
 package com.hangeulbada.domain.group.service;
 
-import com.hangeulbada.domain.group.dto.GroupCreateRequestDto;
 import com.hangeulbada.domain.group.dto.GroupDTO;
+import com.hangeulbada.domain.group.dto.GroupRequestDTO;
 import com.hangeulbada.domain.group.repository.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +32,10 @@ public class GroupServiceImpl implements GroupService{
     }
     @Override
 //    @Transactional
-    public GroupDTO createGroup(User user, GroupCreateRequestDto groupCreateRequestDto) {
+    public GroupDTO createGroup(GroupRequestDTO groupRequestDTO) {
         String groupCode = generateGroupCode();
 
-        Group group = groupCreateRequestDto.toEntity(user);
+        Group group = groupRequestDTO.toEntity();
         group.setGroupCode(groupCode);
         groupRepository.save(group);
 

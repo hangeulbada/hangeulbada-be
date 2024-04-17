@@ -4,19 +4,18 @@ import com.hangeulbada.domain.group.repository.Group;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import org.apache.catalina.User;
 
 @Data
 @Getter
 @Builder
-public class GroupCreateRequestDto {
+public class GroupRequestDTO {
     private String groupName;
     private String teacherId;
 
-    public Group toEntity(User user){
+    public Group toEntity(){
         return Group.builder()
-                .groupName(groupName)
-                .teacherId(teacherId)
+                .groupName(this.groupName)
+                .teacherId(this.teacherId)
                 .build();
     }
 }
