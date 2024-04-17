@@ -5,6 +5,7 @@ import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class WorkbookServiceImpl implements WorkbookService {
 
-    private WorkbookRepository workbookRepository;
-    private ModelMapper mapper;
+    private final WorkbookRepository workbookRepository;
+    private final ModelMapper mapper;
 
-    public WorkbookServiceImpl(WorkbookRepository workbookRepository, ModelMapper mapper) {
-        this.workbookRepository = workbookRepository;
-        this.mapper = mapper;
-    }
 
     @Override
     public WorkbookDto createWorkbook(WorkbookDto workbookDto) {
@@ -40,14 +38,14 @@ public class WorkbookServiceImpl implements WorkbookService {
     }
 
     @Override
-    public WorkbookDto getWorkbookById(long workbookId) {
+    public WorkbookDto getWorkbookById(String workbookId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         return mapper.map(workbook, WorkbookDto.class);
     }
 
     @Override
-    public void deleteWorkbook(long workbookId) {
+    public void deleteWorkbook(String workbookId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         workbookRepository.deleteById(workbookId);

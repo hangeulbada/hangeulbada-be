@@ -28,7 +28,7 @@ public class QuestionServiceImpl implements QuestionSerivce {
     }
 
     @Override
-    public List<QuestionDto> getQuestionsByWorkbookId(long workbookId) {
+    public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<Question> questionList = questionRepository.findByWorkbookId(workbookId);
@@ -37,7 +37,7 @@ public class QuestionServiceImpl implements QuestionSerivce {
     }
 
     @Override
-    public QuestionDto createQuestion(long workbookId, QuestionDto questionDto) {
+    public QuestionDto createQuestion(String workbookId, QuestionDto questionDto) {
         Question question = mapper.map(questionDto, Question.class);
 
         Workbook workbook = workbookRepository.findById(workbookId)
@@ -49,7 +49,7 @@ public class QuestionServiceImpl implements QuestionSerivce {
     }
 
     @Override
-    public QuestionDto getQuestionById(long workbookId, long questionId) {
+    public QuestionDto getQuestionById(String workbookId, String questionId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         Question question = questionRepository.findById(questionId)
@@ -61,7 +61,7 @@ public class QuestionServiceImpl implements QuestionSerivce {
     }
 
     @Override
-    public void deleteQuestion(long workbookId, long questionId) {
+    public void deleteQuestion(String workbookId, String questionId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         Question question = questionRepository.findById(questionId)

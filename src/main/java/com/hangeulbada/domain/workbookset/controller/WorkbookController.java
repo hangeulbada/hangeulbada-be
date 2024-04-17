@@ -24,7 +24,7 @@ public class WorkbookController {
     }
 
     @GetMapping("/{workbookId}")
-    public ResponseEntity<WorkbookDto> getWorkbookById(@PathVariable(name="workbookId") long id){
+    public ResponseEntity<WorkbookDto> getWorkbookById(@PathVariable(name="workbookId") String id){
         return ResponseEntity.ok(workbookService.getWorkbookById(id));
     }
 
@@ -34,7 +34,7 @@ public class WorkbookController {
     }
 
     @DeleteMapping("/{workbookId}")
-    public ResponseEntity<String> deleteWorkbookById(@PathVariable(name="workbookId") long id){
+    public ResponseEntity<String> deleteWorkbookById(@PathVariable(name="workbookId") String id){
         workbookService.deleteWorkbook(id);
         return new ResponseEntity<>("정상적으로 세트가 삭제되었습니다.",HttpStatus.OK);
     }
