@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -193,4 +194,5 @@ public class OCRService {
         System.out.println("studentId = " + studentId);
         System.out.println("ocrImage = " + ocrImage);
     }
+
 }
