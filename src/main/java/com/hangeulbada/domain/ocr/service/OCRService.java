@@ -1,27 +1,21 @@
 package com.hangeulbada.domain.ocr.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OCRService {
     @Value("${clova.ocr.secretkey}") String secretKey;
@@ -94,6 +88,7 @@ public class OCRService {
         List<String> inferTextList = new ArrayList<>();
 
         JSONObject json = new JSONObject(str);
+        log.info("json = " + json.toString());
         JSONArray images = json.getJSONArray("images");
         JSONArray fields = images.getJSONObject(0).getJSONArray("fields");
 

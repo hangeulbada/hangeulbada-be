@@ -1,0 +1,22 @@
+server:
+  port: 5943
+
+custom:
+  jwt:
+    secretKey: "secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey"
+
+spring:
+  application:
+    name: hangeulbada
+  profiles:
+    include: oauth
+
+  data:
+    mongodb:
+      uri: mongodb+srv://ssoxong:CsljH3AFVrEUpzMB@bada.kbmk6jr.mongodb.net/bada?retryWrites=true&w=majority
+
+clova:
+  ocr:
+    secretkey: cFFibVZNcU1wUEdOeFNjc29QbFl2SFVzalhXTHp4b1Q=
+    api:
+      url: https://3xezmpp2d0.apigw.ntruss.com/custom/v1/29655/093daa40dbccc5fefb7b694abce25dcf7b21684331c8bd851807c0b85885fee2/general
