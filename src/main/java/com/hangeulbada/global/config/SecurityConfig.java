@@ -1,5 +1,6 @@
 package com.hangeulbada.global.config;
 
+import com.hangeulbada.domain.auth.component.JwtTokenProvider;
 import com.hangeulbada.domain.auth.jwt.JWTAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,8 @@ public class SecurityConfig {
 
     @Value("${custom.jwt.secretKey}")
     private String secretKey;
+    private final JwtTokenProvider jwtTokenProvider;
+
     private static final String[] WHITE_LIST = {
             "/users/**",
             "/**"
@@ -34,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/**").permitAll())
                 .authorizeHttpRequests().anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JWTAuthFilter(secretKey), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         ;
         return http.build();
     }

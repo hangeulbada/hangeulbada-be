@@ -13,7 +13,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://ssoxong:AkHS3690EwGuFD5n@bada.kbmk6jr.mongodb.net/bada?retryWrites=true&w=majority
+      uri: mongodb+srv://ssoxong:CsljH3AFVrEUpzMB@bada.kbmk6jr.mongodb.net/bada?retryWrites=true&w=majority
 
 clova:
   ocr:
