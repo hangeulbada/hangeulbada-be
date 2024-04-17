@@ -38,3 +38,5 @@ application-oauth.yml
 
 ### VS Code ###
 .vscode/
+
+application.properties
