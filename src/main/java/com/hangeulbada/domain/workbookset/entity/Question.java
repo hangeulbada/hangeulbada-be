@@ -1,6 +1,11 @@
-package com.hangeulbada.domain.feature.entity;
+package com.hangeulbada.domain.workbookset.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 
 @Entity
 public class Question {

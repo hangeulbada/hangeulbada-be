@@ -33,6 +33,10 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 //	implementation 'mysql:mysql-connector-java'
+
+	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
