@@ -15,27 +15,16 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "workbook")
+@Document(collection = "Workbook")
 public class Workbook {
     @Id
     private String id;
-
-//    @Column(nullable = false)
     private String userId;
-
-//    @Column(nullable = false)
     private String title;
 
-//    @OneToMany(mappedBy = "workbook", cascade = CascadeType.ALL)
     private Set<Question> questions = new HashSet<>();
 
-//  생성시 시간으로 자동 설정
-//    @Column(nullable = false)
     private LocalDateTime createdAt;
-
-//    @Column(nullable = true)
     private LocalDateTime deadline;
-
-//    @Column(nullable = false)
     private boolean activated;
 }

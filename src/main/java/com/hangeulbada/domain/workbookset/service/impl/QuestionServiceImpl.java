@@ -8,6 +8,7 @@ import com.hangeulbada.domain.workbookset.dto.QuestionDto;
 import com.hangeulbada.domain.workbookset.repository.QuestionRepository;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.QuestionSerivce;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionSerivce {
-    private QuestionRepository questionRepository;
-    private WorkbookRepository workbookRepository;
-    private ModelMapper mapper;
-
-    public QuestionServiceImpl(QuestionRepository questionRepository, WorkbookRepository workbookRepository, ModelMapper mapper) {
-        this.questionRepository = questionRepository;
-        this.workbookRepository = workbookRepository;
-        this.mapper = mapper;
-    }
+    private final QuestionRepository questionRepository;
+    private final WorkbookRepository workbookRepository;
+    private final ModelMapper mapper;
 
     @Override
     public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {

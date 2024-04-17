@@ -1,13 +1,11 @@
 package com.hangeulbada.domain.auth.service;
 
+import com.hangeulbada.domain.auth.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hangeulbada.domain.auth.component.AuthTokensGenerator;
-import com.hangeulbada.domain.auth.dto.AuthTokens;
-import com.hangeulbada.domain.auth.dto.LoginResponse;
-import com.hangeulbada.domain.auth.dto.SignupResponse;
-import com.hangeulbada.domain.auth.dto.User;
+import com.hangeulbada.domain.auth.dto.*;
 import com.hangeulbada.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
