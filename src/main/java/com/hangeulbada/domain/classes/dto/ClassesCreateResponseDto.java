@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.classes.service.dto;
+package com.hangeulbada.domain.classes.dto;
 
 import lombok.Builder;
 import lombok.Data;

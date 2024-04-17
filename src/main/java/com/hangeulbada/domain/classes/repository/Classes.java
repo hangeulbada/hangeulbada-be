@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.classes.domain;
+package com.hangeulbada.domain.classes.repository;
 
 import com.hangeulbada.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;

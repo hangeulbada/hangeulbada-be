@@ -1,6 +1,6 @@
-package com.hangeulbada.domain.classes.service.dto;
+package com.hangeulbada.domain.classes.dto;
 
-import com.hangeulbada.domain.classes.domain.Classes;
+import com.hangeulbada.domain.classes.repository.Classes;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

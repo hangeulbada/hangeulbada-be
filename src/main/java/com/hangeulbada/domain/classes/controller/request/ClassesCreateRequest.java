@@ -1,6 +1,6 @@
 package com.hangeulbada.domain.classes.controller.request;
 
-import com.hangeulbada.domain.classes.service.dto.ClassesCreateRequestDto;
+import com.hangeulbada.domain.classes.dto.ClassesCreateRequestDto;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

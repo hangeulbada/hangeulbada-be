@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.classes.domain;
+package com.hangeulbada.domain.classes.repository;
 
 import jakarta.persistence.Id;
 import lombok.*;

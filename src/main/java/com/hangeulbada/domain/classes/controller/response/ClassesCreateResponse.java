@@ -1,7 +1,7 @@
 package com.hangeulbada.domain.classes.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hangeulbada.domain.classes.service.dto.ClassesCreateResponseDto;
+import com.hangeulbada.domain.classes.dto.ClassesCreateResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 

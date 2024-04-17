@@ -1,9 +1,9 @@
 package com.hangeulbada.domain.classes.service;
-import com.hangeulbada.domain.classes.domain.Classes;
-import com.hangeulbada.domain.classes.domain.ClassesRepository;
-import com.hangeulbada.domain.classes.service.dto.ClassesCreateRequestDto;
-import com.hangeulbada.domain.classes.service.dto.ClassesCreateResponseDto;
-import com.hangeulbada.domain.classes.service.dto.ClassesResponseDto;
+import com.hangeulbada.domain.classes.repository.Classes;
+import com.hangeulbada.domain.classes.repository.ClassesRepository;
+import com.hangeulbada.domain.classes.dto.ClassesCreateRequestDto;
+import com.hangeulbada.domain.classes.dto.ClassesCreateResponseDto;
+import com.hangeulbada.domain.classes.dto.ClassesResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;

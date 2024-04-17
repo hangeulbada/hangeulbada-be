@@ -3,7 +3,7 @@ import com.hangeulbada.domain.annotation.LoggedInUser;
 import com.hangeulbada.domain.classes.controller.request.ClassesCreateRequest;
 import com.hangeulbada.domain.classes.controller.response.ClassesCreateResponse;
 import com.hangeulbada.domain.classes.service.ClassesService;
-import com.hangeulbada.domain.classes.service.dto.ClassesResponseDto;
+import com.hangeulbada.domain.classes.dto.ClassesResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
