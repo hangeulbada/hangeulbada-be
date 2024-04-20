@@ -54,7 +54,7 @@ jobs:
       run: |
         aws deploy create-deployment \
         --application-name bada-be \
-        --deployment-group-name bada-be\
+        --deployment-group-name bada-be \
         --file-exists-behavior OVERWRITE \
         --s3-location bucket=bada-be-deploy,bundleType=zip,key=bada-be.zip \ 
         --region ap-northeast-2
