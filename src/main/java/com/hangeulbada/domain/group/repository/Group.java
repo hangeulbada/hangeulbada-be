@@ -11,23 +11,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Builder
-@Document("classes")
+@Document("Group")
 public class Group extends BaseTimeEntity {
     @Id
     private String id;
-//    @NotBlank
-//    @Column(name = "classname",unique = true)
     private String groupName;
-
-//    @NotBlank
-//    @Column(name = "teacher_id",unique = true)
     private String teacherId;
-
-//    @NotBlank
-//    @Column(name = "classcode",unique = true)
     private String groupCode;
-
-//    @Column(name = "activated", nullable = false)
+    @Builder.Default
     private boolean activated = false;
-
 }

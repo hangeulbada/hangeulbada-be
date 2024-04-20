@@ -1,22 +1,23 @@
 package com.hangeulbada.domain.group.service;
 
-import com.hangeulbada.domain.group.dto.GroupCreateRequestDto;
-import com.hangeulbada.domain.group.dto.GroupCreateResponseDto;
-import com.hangeulbada.domain.group.dto.GroupResponseDto;
+import com.hangeulbada.domain.group.dto.GroupDTO;
+import com.hangeulbada.domain.group.dto.GroupRequestDTO;
 import com.hangeulbada.domain.group.repository.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class GroupServiceImpl implements GroupService{
     private final GroupRepository groupRepository;
+    private final ModelMapper mapper;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
 
     private String generateGroupCode(){
@@ -31,26 +32,24 @@ public class GroupServiceImpl implements GroupService{
     }
     @Override
 //    @Transactional
-    public GroupCreateResponseDto createGroup(User user, GroupCreateRequestDto groupCreateRequestDto) {
+    public GroupDTO createGroup(GroupRequestDTO groupRequestDTO) {
         String groupCode = generateGroupCode();
-        Group group = groupCreateRequestDto.toEntity(user);
+
+        Group group = groupRequestDTO.toEntity();
         group.setGroupCode(groupCode);
         groupRepository.save(group);
-        GroupCreateResponseDto responseDto = GroupCreateResponseDto.builder()
-                .groupCode(groupCode)
-                .createdAt(group.getCreatedAt())
-                .updatedAt(group.getUpdatedAt())
-                .build();
-        return responseDto;
+
+        return mapper.map(group, GroupDTO.class);
     }
 
 
     @Override
     @Transactional
-    public List<GroupResponseDto> getGroup() {
-        List<GroupResponseDto> group = groupRepository.findAll()
-                .stream().map(GroupResponseDto::from).toList();
-        return group;
+    public List<GroupDTO> getAllGroup() {
+        List<Group> groups = groupRepository.findAll();
+        return groups.stream()
+                .map(group -> mapper.map(group, GroupDTO.class))
+                .collect(Collectors.toList());
     }
     @Override
     @Transactional

@@ -12,13 +12,13 @@ public class GroupResponseDto {
     private String teacherId;
 
     @Builder
-    public GroupResponseDto(String groupname, String teacherId){
-        this.groupName = groupname;
+    public GroupResponseDto(String groupName, String teacherId){
+        this.groupName = groupName;
         this.teacherId = teacherId;
     }
     public static GroupResponseDto from(Group group){
         return GroupResponseDto.builder()
-                .groupname(group.getGroupName())
+                .groupName(group.getGroupName())
                 .teacherId(group.getTeacherId())
                 .build();
     }

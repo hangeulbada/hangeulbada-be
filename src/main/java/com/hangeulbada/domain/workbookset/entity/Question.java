@@ -4,21 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "question")
+@Document(collection = "Question")
 public class Question {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "workbookId", nullable = false)
+    @DBRef
     private Workbook workbook;
 
-//    @Column(nullable = false)
     private String content;
 }
