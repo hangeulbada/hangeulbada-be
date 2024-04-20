@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -19,7 +18,7 @@ public class Workbook {
     private String id;
     private String userId;
     private String title;
-    private Set<Question> questions = new HashSet<>();
+    private Set<Question> questions;
     private LocalDateTime createdAt;
     private LocalDateTime deadline;
     private boolean activated;

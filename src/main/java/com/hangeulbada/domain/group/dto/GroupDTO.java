@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 @Data
+@Builder
 public class GroupDTO {
     @Id
     private String id;

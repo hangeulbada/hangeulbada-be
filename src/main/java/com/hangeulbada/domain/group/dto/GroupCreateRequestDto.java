@@ -12,11 +12,4 @@ import org.apache.catalina.User;
 public class GroupCreateRequestDto {
     private String groupName;
     private String teacherId;
-
-    public Group toEntity(User user){
-        return Group.builder()
-                .groupName(groupName)
-                .teacherId(teacherId)
-                .build();
-    }
 }
