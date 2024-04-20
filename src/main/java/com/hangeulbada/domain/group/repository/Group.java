@@ -18,6 +18,6 @@ public class Group extends BaseTimeEntity {
     private String groupName;
     private String teacherId;
     private String groupCode;
-
+    @Builder.Default
     private boolean activated = false;
 }

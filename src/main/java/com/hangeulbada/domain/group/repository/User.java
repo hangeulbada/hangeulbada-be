@@ -13,6 +13,6 @@ public class User {
     private String uid;
     private String email;
     private String name;
-    private String role = "undefined";
+    private String role;
     private String loginType;
 }

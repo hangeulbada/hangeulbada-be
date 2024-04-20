@@ -26,19 +26,16 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.headers().frameOptions().disable();
-
-        HttpSecurity httpSecurity = http.authorizeHttpRequests(authorize -> authorize
+        http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(WHITE_LIST).permitAll()
                         // accept swagger
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/**").permitAll())
-                .authorizeHttpRequests().anyRequest().authenticated()
-                .and()
+                .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+                        .anyRequest().permitAll())
                 .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-        ;
+        ;g
         return http.build();
     }
 

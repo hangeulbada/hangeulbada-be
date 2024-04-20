@@ -1,9 +1,6 @@
 package com.hangeulbada.domain.workbookset.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,15 +12,14 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Document(collection = "Workbook")
 public class Workbook {
     @Id
     private String id;
     private String userId;
     private String title;
-
     private Set<Question> questions = new HashSet<>();
-
     private LocalDateTime createdAt;
     private LocalDateTime deadline;
     private boolean activated;
