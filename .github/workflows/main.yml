@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 env:
-  S3_BUCKET_NAME: bada-be-deploy
+  S3_BUCKET_NAME: bada-be-deploy2
 
 jobs:
   build:
@@ -56,5 +56,5 @@ jobs:
         --application-name bada-be
         --deployment-group-name bada-be-group
         --file-exists-behavior OVERWRITE
-        --s3-location bucket=bada-be-deploy,bundleType=zip,key=bada-be.zip
+        --s3-location bucket=bada-be-deploy2,bundleType=zip,key=bada-be.zip
         --region ap-northeast-2
