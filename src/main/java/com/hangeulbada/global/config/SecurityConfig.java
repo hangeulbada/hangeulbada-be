@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                         .anyRequest().permitAll())
                 .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-        ;g
+        ;
         return http.build();
     }
 
