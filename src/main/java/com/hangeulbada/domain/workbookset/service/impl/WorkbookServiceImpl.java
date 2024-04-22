@@ -1,8 +1,8 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
+import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +26,6 @@ public class WorkbookServiceImpl implements WorkbookService {
     public WorkbookDto createWorkbook(WorkbookDto workbookDto) {
         Workbook workbook = mapper.map(workbookDto, Workbook.class);
         log.info("workbook: {}", workbook);
-        workbook.setActivated(true);
-        workbook.setCreatedAt(LocalDateTime.now());
         Workbook newWorkbook = workbookRepository.save(workbook);
         return mapper.map(newWorkbook, WorkbookDto.class);
     }

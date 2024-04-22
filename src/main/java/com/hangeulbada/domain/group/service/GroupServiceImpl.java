@@ -35,7 +35,7 @@ public class GroupServiceImpl implements GroupService{
     public GroupDTO createGroup(GroupRequestDTO groupRequestDTO) {
         String groupCode = generateGroupCode();
 
-        Group group = groupRequestDTO.toEntity();
+        Group group = mapper.map(groupRequestDTO, Group.class);
         group.setGroupCode(groupCode);
         groupRepository.save(group);
 

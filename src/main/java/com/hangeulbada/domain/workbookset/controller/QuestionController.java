@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.workbookset.controller;
 
 import com.hangeulbada.domain.workbookset.dto.QuestionDto;
+import com.hangeulbada.domain.workbookset.dto.QuestionsDto;
 import com.hangeulbada.domain.workbookset.service.QuestionSerivce;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,9 @@ public class QuestionController {
     private final QuestionSerivce questionSerivce;
 
     @PostMapping
-    public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
-                                                      @Valid @RequestBody QuestionDto questionDto){
-        return new ResponseEntity<>(questionSerivce.createQuestion(workbookId, questionDto), HttpStatus.CREATED);
+    public ResponseEntity<List<QuestionDto>> createQuestion(@PathVariable(name = "workbookId") String workbookId,
+                                                      @Valid @RequestBody QuestionsDto questionsDto){
+        return new ResponseEntity<>(questionSerivce.createQuestion(workbookId, questionsDto), HttpStatus.CREATED);
     }
 
     @GetMapping

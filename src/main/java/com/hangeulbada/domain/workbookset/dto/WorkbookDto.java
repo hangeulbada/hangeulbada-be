@@ -5,25 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Schema(description = "WorkbookDto Model")
 public class WorkbookDto {
     @JsonIgnore
     private String id;
-//    @NotEmpty
-    private String userId;
-
-//    @NotEmpty
-//    @Size(min=2, message = "제목은 최소 2글자 이상이어야 합니다.")
+    private String teacherId;
     private String title;
-
-    private Set<QuestionDto> questions;
-
-    private LocalDateTime deadline;
-
-//    @NotEmpty // default value - true
-    private boolean activated;
-
+    private List<String> questions;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

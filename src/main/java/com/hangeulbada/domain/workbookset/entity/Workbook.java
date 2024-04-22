@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,13 +13,12 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Document(collection = "Workbook")
-public class Workbook {
+public class Workbook{
     @Id
     private String id;
-    private String userId;
+    private String teacherId;
     private String title;
-    private Set<Question> questions;
-    private LocalDateTime createdAt;
-    private LocalDateTime deadline;
-    private boolean activated;
+    private List<String> questions;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }

@@ -1,13 +1,13 @@
 package com.hangeulbada.domain.workbookset.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@Builder
-@Schema(description = "QuestionDto Model")
-public class QuestionDto {
+@Schema(description = "QuestionsDto Model")
+public class QuestionsDto {
     private String teacherId;
-    private String content;
+    private List<String> content;
 }

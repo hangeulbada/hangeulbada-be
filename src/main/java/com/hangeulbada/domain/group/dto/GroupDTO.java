@@ -12,6 +12,4 @@ public class GroupDTO {
     private String groupName;
     private String teacherId;
     private String groupCode;
-    @Builder.Default
-    private boolean activated = false;
 }
