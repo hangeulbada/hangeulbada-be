@@ -5,6 +5,7 @@ import com.hangeulbada.domain.group.dto.GroupRequestDTO;
 import com.hangeulbada.domain.group.repository.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class GroupServiceImpl implements GroupService{
@@ -35,8 +37,11 @@ public class GroupServiceImpl implements GroupService{
     public GroupDTO createGroup(GroupRequestDTO groupRequestDTO) {
         String groupCode = generateGroupCode();
 
-        Group group = mapper.map(groupRequestDTO, Group.class);
-        group.setGroupCode(groupCode);
+        Group group = Group.builder()
+                .groupName(groupRequestDTO.getGroupName())
+                .teacherId(groupRequestDTO.getTeacherId())
+                .groupCode(groupCode)
+                .build();
         groupRepository.save(group);
 
         return mapper.map(group, GroupDTO.class);

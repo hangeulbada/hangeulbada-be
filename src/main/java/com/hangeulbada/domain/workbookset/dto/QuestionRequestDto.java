@@ -5,16 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nonapi.io.github.classgraph.json.Id;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "QuestionDto Model")
-public class QuestionDto {
-    @Id
-    private String id;
+@Schema(description = "QuestionRequestDto Model")
+public class QuestionRequestDto {
     private String teacherId;
     private String content;
 }

@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -16,4 +19,5 @@ public class Group{
     private String groupName;
     private String teacherId;
     private String groupCode;
-}
+    @Builder.Default
+    private List<String> studentIds = new ArrayList<>();}

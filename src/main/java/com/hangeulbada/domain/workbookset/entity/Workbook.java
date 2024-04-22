@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,7 +19,10 @@ public class Workbook{
     private String id;
     private String teacherId;
     private String title;
-    private List<String> questions;
+    private String description;
+    private double difficulty;
+    @Builder.Default
+    private List<String> questionIds = new ArrayList<>();
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 }
