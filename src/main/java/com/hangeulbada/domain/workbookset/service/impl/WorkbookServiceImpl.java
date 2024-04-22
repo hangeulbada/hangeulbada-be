@@ -1,8 +1,9 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
+import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
+import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +24,18 @@ public class WorkbookServiceImpl implements WorkbookService {
 
 
     @Override
-    public WorkbookDto createWorkbook(WorkbookDto workbookDto) {
-        Workbook workbook = mapper.map(workbookDto, Workbook.class);
+    public WorkbookDto createWorkbook(WorkbookRequestDTO workbookDto) {
+        Workbook workbook = Workbook.builder()
+                .description(workbookDto.getDescription())
+                .difficulty(workbookDto.getDifficulty())
+                .endDate(workbookDto.getEndDate())
+                .startDate(workbookDto.getStartDate())
+                .teacherId(workbookDto.getTeacherId())
+                .title(workbookDto.getTitle())
+                .build();
         log.info("workbook: {}", workbook);
-        workbook.setActivated(true);
-        workbook.setCreatedAt(LocalDateTime.now());
-        Workbook newWorkbook = workbookRepository.save(workbook);
-        return mapper.map(newWorkbook, WorkbookDto.class);
+        workbookRepository.save(workbook);
+        return mapper.map(workbook, WorkbookDto.class);
     }
 
     @Override
@@ -48,8 +53,6 @@ public class WorkbookServiceImpl implements WorkbookService {
 
     @Override
     public void deleteWorkbook(String workbookId) {
-        Workbook workbook = workbookRepository.findById(workbookId)
-                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         workbookRepository.deleteById(workbookId);
     }
 }

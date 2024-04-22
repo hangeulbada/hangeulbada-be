@@ -1,6 +1,0 @@
-CREATE TABLE classes(
-classname VARCHAR(100) PRIMARY KEY,
-teacher_id VARCHAR(100) NOT NULL UNIQUE,
-classcode VARCHAR(100) NOT NULL,
-activated TINYINT(1) NOT NULL
-);
