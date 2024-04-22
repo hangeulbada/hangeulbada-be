@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.workbookset.controller;
 
 import com.hangeulbada.domain.workbookset.dto.QuestionDto;
+import com.hangeulbada.domain.workbookset.dto.QuestionRequestDto;
 import com.hangeulbada.domain.workbookset.service.QuestionSerivce;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/workbook/{workbookId}/questions")
+@RequestMapping("/api/v1/workbook/{workbookId}/questions")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionSerivce questionSerivce;
 
     @PostMapping
     public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
-                                                      @Valid @RequestBody QuestionDto questionDto){
-        return new ResponseEntity<>(questionSerivce.createQuestion(workbookId, questionDto), HttpStatus.CREATED);
+                                                      @Valid @RequestBody QuestionRequestDto questionsDto){
+        return new ResponseEntity<>(questionSerivce.createQuestion(workbookId, questionsDto), HttpStatus.CREATED);
     }
 
     @GetMapping

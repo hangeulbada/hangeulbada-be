@@ -1,11 +1,18 @@
 package com.hangeulbada.domain.group.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GroupDTO {
     @Id
     private String id;
@@ -13,5 +20,5 @@ public class GroupDTO {
     private String teacherId;
     private String groupCode;
     @Builder.Default
-    private boolean activated = false;
+    private List<String> studentIds = new ArrayList<>();
 }
