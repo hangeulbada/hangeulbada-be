@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Google OAuth2", description = "구글 로그인/회원가입 API")
-public class UserController {
+public class AuthController {
 
     private final GoogleService googleService;
 
