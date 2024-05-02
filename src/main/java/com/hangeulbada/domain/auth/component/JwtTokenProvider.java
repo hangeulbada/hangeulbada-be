@@ -7,6 +7,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,23 +16,21 @@ import java.util.Date;
 
 @Slf4j
 @Component
-
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1; 	//1시간
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // 14일
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // 14일
 
     private final Key key;
     long now = (new Date()).getTime();
     public JwtTokenProvider(@Value("${custom.jwt.secretKey}") String secretKey) {
-
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-
     public String accessTokenGenerate(String subject) {
         Date expiredAt = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-
+        Claims claims = Jwts.claims().setSubject(subject);
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(subject)    //uid
                 .setExpiration(expiredAt)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -42,16 +42,23 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setExpiration(expiredAt)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(SignatureAlgorithm.HS512, key)
                 .compact();
+    }
+
+    public Authentication getAuthentication(String token) {
+//        log.info("first getAuthentication");
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(getUid(token));
+//        log.info("getAuthentication"+ userDetails.getUsername());
+//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        System.out.println("getAuthentication"+ getUid(token));
+        return new UsernamePasswordAuthenticationToken(getUid(token), "", null);
     }
     public Claims parseClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     public boolean isRefreshTokenValid(String token) {
-        log.info("isRefreshTokenValid", token);
-        log.info(isTokenExpired(token) + "");
         return !isTokenExpired(token);
     }
 
@@ -59,16 +66,17 @@ public class JwtTokenProvider {
         return parseClaims(token).getExpiration().before(new Date());
     }
 
-    public String generateAccessTokenFromRefreshToken(String refreshToken) {
-        log.info("generate new token from refresh token");
-        if (isRefreshTokenValid(refreshToken)) {
-            return (accessTokenGenerate(getUid(refreshToken)));
-        }
-        return null;
-    }
+//    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+//        log.info("generate new token from refresh token");
+//        if (isRefreshTokenValid(refreshToken)) {
+//            return (accessTokenGenerate(getUid(refreshToken)));
+//        }
+//        return null;
+//    }
 
     public String getUid(String token) {
-        return parseClaims(token).get("uid", String.class);
+        System.out.println(parseClaims(token));
+        return parseClaims(token).get("sub", String.class);
     }
 
 

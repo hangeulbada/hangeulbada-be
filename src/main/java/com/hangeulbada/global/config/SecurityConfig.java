@@ -41,13 +41,4 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-//        @Bean
-//        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//            http
-//                    .cors(Customizer.withDefaults())
-//                    .csrf(AbstractHttpConfigurer::disable)
-//                    .authorizeHttpRequests(auth -> auth
-//                            .anyRequest().permitAll());  // 모든 요청에 대해 접근 허용
-//            return http.build();
-//}
 }

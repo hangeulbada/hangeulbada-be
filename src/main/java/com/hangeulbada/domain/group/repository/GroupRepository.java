@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.group.repository;
 
 import com.hangeulbada.domain.group.dto.SubmitDTO;
+import com.hangeulbada.domain.group.entity.Group;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,5 @@ public interface GroupRepository extends MongoRepository<Group, String> {
             "{ $sort: { submitDate: 1 } }",
     })
     List<SubmitDTO> getRecentSubmit(String groupId);
+    List<Group> findByTeacherId(String teacherId);
 }

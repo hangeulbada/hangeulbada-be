@@ -52,10 +52,8 @@ public class GoogleService {
                 .name(name)
                 .role(role)
                 .build();
-        log.info("newUser: "+newUser);
-        userRepository.save(newUser);
 
-        AuthTokens token=authTokensGenerator.generate(uid);
+        AuthTokens token=authTokensGenerator.generate(userRepository.save(newUser).getId());
         return new LoginResponse(newUser.getUid(),newUser.getName(),newUser.getEmail(), newUser.getRole(), token);
     }
 
