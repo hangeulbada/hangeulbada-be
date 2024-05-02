@@ -5,16 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupDTO {
-    private String id;
+public class GroupRequest {
     private String groupName;
-    private String teacherId;
-    private String groupCode;
-    private List<String> studentIds;
 }
