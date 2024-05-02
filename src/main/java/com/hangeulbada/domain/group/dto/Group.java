@@ -1,23 +1,24 @@
-package com.hangeulbada.domain.group.repository;
+package com.hangeulbada.domain.group.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
-@Document("Group")
-public class Group{
+@NoArgsConstructor
+@AllArgsConstructor
+public class Group {
     @Id
     private String id;
     private String groupName;
     private String teacherId;
     private String groupCode;
     @Builder.Default
-    private List<String> studentIds = new ArrayList<>();}
+    private List<String> studentIds = new ArrayList<>();
+}
