@@ -1,11 +1,10 @@
 package com.hangeulbada.domain.group.controller;
 
-import com.hangeulbada.domain.group.dto.GroupCreateRequestDto;
-import com.hangeulbada.domain.group.dto.Group;
+import com.hangeulbada.domain.group.dto.GroupDTO;
+import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,28 +24,30 @@ public class GroupController {
     @PostMapping("/group")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
-    public ResponseEntity<Group> createGroup(Principal principal,
-                                             @RequestBody @Parameter(description = "클래스 생성 요청", required = true)
-                                                GroupCreateRequestDto groupRequest){
-        log.info("createGroup", principal.getName(), groupRequest);
-        log.info("Request: {}", groupRequest.toString());
-        Group group = groupService.createGroup(principal.getName(), groupRequest);
-        log.info("Group created: {}", group.toString());
+    public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupRequest request, Principal principal){
+        GroupDTO group = groupService.createGroup(principal.getName(), request.getGroupName());
         return ResponseEntity.ok(group);
     }
 
     @GetMapping("/group")
     @Operation(summary = "모든 클래스 조회", description = "모든 클래스를 조회합니다.")
-    public ResponseEntity<List<Group>> getAllGroup(Principal principal){
+    public ResponseEntity<?> getAllGroup(Principal principal){
         //user의 id를 받아서 그룹을 조회
-        List<Group> group = groupService.getAllGroupById(principal.getName());
+        if (principal == null){
+            log.error("principal is null");
+            return ResponseEntity.ok(null);
+        }
+
+        String id = principal.getName();
+        log.info("id" + id);
+        List<GroupDTO> group = groupService.getAllGroupById(id);
         return ResponseEntity.ok(group);
     }
 
     @GetMapping("/group/{groupId}")
     @Operation(summary = "특정 클래스 조회", description = "특정 클래스를 조회합니다.")
-    public ResponseEntity<Group> getGroup(@PathVariable String groupId){
-        Group groupList = groupService.getGroup(groupId);
+    public ResponseEntity<GroupDTO> getGroup(@PathVariable String groupId){
+        GroupDTO groupList = groupService.getGroup(groupId);
         return ResponseEntity.ok(groupList);
     }
 

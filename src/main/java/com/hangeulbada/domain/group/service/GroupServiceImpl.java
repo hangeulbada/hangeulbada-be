@@ -1,9 +1,9 @@
 package com.hangeulbada.domain.group.service;
 
 import com.hangeulbada.domain.assignment.service.AssignmentService;
-import com.hangeulbada.domain.group.dto.GroupCreateRequestDto;
-import com.hangeulbada.domain.group.dto.Group;
+import com.hangeulbada.domain.group.dto.GroupDTO;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
+import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,42 +35,43 @@ public class GroupServiceImpl implements GroupService{
         return codeBuilder.toString();
     }
     @Override
-//    @Transactional
-    public Group createGroup(String id, GroupCreateRequestDto groupRequestDTO) {
-        String groupCode = generateGroupCode();
-        Group group = Group.builder()
-                .groupName(groupRequestDTO.getGroupName())
+    @Transactional
+    public GroupDTO createGroup(String id, String groupName) {
+        System.out.println(id + " " + groupName);
+        GroupDTO group = GroupDTO.builder()
+                .id(null)
+                .groupName(groupName)
                 .teacherId(id)
-                .groupCode(groupCode)
+                .groupCode(generateGroupCode())
                 .build();
+        Group newGroup = mapper.map(group, Group.class);
+        groupRepository.save(newGroup);
+        return mapper.map(newGroup, GroupDTO.class);
+    }
 
-        groupRepository.save(mapper.map(group, com.hangeulbada.domain.group.entity.Group.class));
 
-        return mapper.map(group, Group.class);
+    @Override
+    @Transactional
+    public GroupDTO getGroup(String id) {
+        Group group = groupRepository.findById(id).orElseThrow();
+        return mapper.map(group, GroupDTO.class);
     }
 
     @Override
     @Transactional
-    public Group getGroup(String id) {
-        com.hangeulbada.domain.group.entity.Group group = groupRepository.findById(id).orElseThrow();
-        return mapper.map(group, Group.class);
-    }
-
-    @Override
-    @Transactional
-    public List<Group> getAllGroup() {
-        List<com.hangeulbada.domain.group.entity.Group> groups = groupRepository.findAll();
+    public List<GroupDTO> getAllGroup() {
+        List<Group> groups = groupRepository.findAll();
         return groups.stream()
-                .map(group -> mapper.map(group, Group.class))
+                .map(group -> mapper.map(group, GroupDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public List<Group> getAllGroupById(String id){
-        List<com.hangeulbada.domain.group.entity.Group> groups = groupRepository.findByTeacherId(id);
+    public List<GroupDTO> getAllGroupById(String id){
+        List<Group> groups = groupRepository.findByTeacherId(id);
         return groups.stream()
-                .map(group -> mapper.map(group, Group.class))
+                .map(group -> mapper.map(group, GroupDTO.class))
                 .collect(Collectors.toList());
     }
 

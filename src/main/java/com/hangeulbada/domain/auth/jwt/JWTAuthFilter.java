@@ -36,7 +36,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 log.info("auth" + auth);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-                filterChain.doFilter(request, response);
             }
             else{
                 log.info("Token is not valid: Access token has expired");
