@@ -26,7 +26,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("JWTAuthFilter");
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -63,7 +62,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     private boolean isValidAccessToken(String token) {
         try {
             log.info("Token validation");
-            log.info("Token: " + token);
             return !extractAllClaims(token).getExpiration().before(new java.util.Date());
         } catch (Exception e) {
             log.info("Token validation error: " + e.getMessage());

@@ -37,7 +37,6 @@ public class GroupServiceImpl implements GroupService{
     @Override
     @Transactional
     public GroupDTO createGroup(String id, String groupName) {
-        System.out.println(id + " " + groupName);
         GroupDTO group = GroupDTO.builder()
                 .id(null)
                 .groupName(groupName)

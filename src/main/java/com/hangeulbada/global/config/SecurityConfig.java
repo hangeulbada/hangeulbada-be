@@ -24,7 +24,6 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
             "/users/**",
-            "/api/v1/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
     };
@@ -35,7 +34,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(WHITE_LIST).permitAll())
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .requestMatchers("/api/v1/**").authenticated())  // JWT 필터를 적용할 경로
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                         .anyRequest().permitAll())
                 .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

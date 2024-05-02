@@ -47,11 +47,6 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-//        log.info("first getAuthentication");
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(getUid(token));
-//        log.info("getAuthentication"+ userDetails.getUsername());
-//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-        System.out.println("getAuthentication"+ getUid(token));
         return new UsernamePasswordAuthenticationToken(getUid(token), "", null);
     }
     public Claims parseClaims(String token) {
@@ -75,7 +70,6 @@ public class JwtTokenProvider {
 //    }
 
     public String getUid(String token) {
-        System.out.println(parseClaims(token));
         return parseClaims(token).get("sub", String.class);
     }
 

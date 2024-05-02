@@ -50,7 +50,6 @@ public class AuthController {
             @Parameter(description = "구글 로그인 후 리다이렉트 URI로 전달받은 code") @RequestParam String code)
     {
         try {
-            log.info("code: "+code);
             LoginResponse response = googleService.googleOauth2(code);
             if (response.getToken()!=null){
                 return ResponseEntity.ok(response);
@@ -76,7 +75,6 @@ public class AuthController {
     public ResponseEntity<LoginResponse> googleSignup(
             @RequestBody SignupResponse signupResponse) {
 
-        log.info("LoginResponse: "+signupResponse);
         return ResponseEntity.ok(googleService.googleSignup(signupResponse));
 
     }
