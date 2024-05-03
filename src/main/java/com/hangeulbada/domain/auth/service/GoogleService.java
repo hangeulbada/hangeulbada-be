@@ -22,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -39,7 +40,7 @@ public class GoogleService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
-    public LoginResponse googleSignup(SignupResponse signupResponse){
+    public LoginResponse googleSignup(SignupResponse signupResponse) {
 
         log.info("googleSignup");
         String uid = (String) signupResponse.getUid();
@@ -55,18 +56,23 @@ public class GoogleService {
                 .role(role)
                 .build();
 
-        AuthTokens token=authTokensGenerator.generate(userRepository.save(newUser).getId());
-        return new LoginResponse(newUser.getUid(),newUser.getName(),newUser.getEmail(), newUser.getRole(), token);
+        AuthTokens token = authTokensGenerator.generate(userRepository.save(newUser).getId());
+        return LoginResponse.builder()
+                .id(newUser.getId())
+                .uid(newUser.getUid())
+                .name(newUser.getName())
+                .email(newUser.getEmail())
+                .role(newUser.getRole())
+                .token(token)
+                .build();
     }
 
-    public LoginResponse googleOauth2(String code){
+    public LoginResponse googleOauth2(String code) {
         // code로 access token 요청
         String accessToken = getGoogleAccessToken(code, googleRedirectUri);
-        log.info("accessToken: "+accessToken);
+        log.info("accessToken: " + accessToken);
         // access token으로 사용자 정보 요청
         HashMap<String, Object> userInfo = getGoogleUserInfo(accessToken);
-        log.info("userInfo: "+userInfo);
-
         // google id로 회원가입, 로그인 처리
         return googleUserLogin(userInfo);
     }
@@ -76,10 +82,11 @@ public class GoogleService {
         String uid = (String) userInfo.get("uid");
 
         // 이미 가입된 회원인지 확인
+        log.info("이미 가입된 회원인지 확인" + uid);
         Optional<User> user = userRepository.findByUid(uid);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             User googleUser = user.get();
-            AuthTokens token=authTokensGenerator.generate(uid);
+            AuthTokens token = authTokensGenerator.generate(uid);
             return LoginResponse.builder()
                     .id(googleUser.getId())
                     .uid(googleUser.getUid())
@@ -90,17 +97,21 @@ public class GoogleService {
                     .build();
         }
         // 가입되지 않은 회원
-        else{
-            // TODO: 예외처리
-            return new LoginResponse(userInfo.get("uid").toString(),userInfo.get("name").toString(),userInfo.get("email").toString(), null, null);
+        else {
+            log.info("가입되지 않은 회원, 회원가입 필요");
+            return LoginResponse.builder()
+                    .uid(userInfo.get("uid").toString())
+                    .name(userInfo.get("name").toString())
+                    .email(userInfo.get("email").toString())
+                    .build();
         }
-
     }
 
     // 인가 code로 accesstoken 요청
-    private String getGoogleAccessToken(String code, String googleRedirectUri){
+    private String getGoogleAccessToken(String code, String googleRedirectUri) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        log.error("유효하지 않은 code");
 
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -109,33 +120,40 @@ public class GoogleService {
         body.add("client_secret", googleClientSecret);
         body.add("redirect_uri", googleRedirectUri);
         body.add("code", code);
+        log.error("유효하지 않은 code");
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> googleTokenRequest = new HttpEntity<>(body, headers);
-        RestTemplate rt = new RestTemplate();
-        ResponseEntity<String> response = rt.exchange(
-                "https://oauth2.googleapis.com/token",
-                HttpMethod.POST,
-                googleTokenRequest,
-                String.class
-        );
-
-        // HTTP 응답 (JSON) -> 액세스 토큰 파싱
-        String responseBody = response.getBody();
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = null;
         try {
-            jsonNode = objectMapper.readTree(responseBody);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            HttpEntity<MultiValueMap<String, String>> googleTokenRequest = new HttpEntity<>(body, headers);
+            RestTemplate rt = new RestTemplate();
+            ResponseEntity<String> response = rt.exchange(
+                    "https://oauth2.googleapis.com/token",
+                    HttpMethod.POST,
+                    googleTokenRequest,
+                    String.class
+            );
+
+
+            // HTTP 응답 (JSON) -> 액세스 토큰 파싱
+            String responseBody = response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = null;
+            try {
+                jsonNode = objectMapper.readTree(responseBody);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return jsonNode.get("access_token").asText(); //토큰 전송
+        } catch (Exception e) {
+            log.error("유효하지 않은 code");
+            throw new NoSuchElementException();
         }
-        return jsonNode.get("access_token").asText(); //토큰 전송
     }
 
     // accesstoken으로 사용자 정보 요청
     private HashMap<String, Object> getGoogleUserInfo(String accessToken) {
         log.info("getGoogleUserInfo");
-        HashMap<String, Object> userInfo= new HashMap<String,Object>();
+        HashMap<String, Object> userInfo = new HashMap<String, Object>();
 
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -150,7 +168,7 @@ public class GoogleService {
                 googleUserInfoRequest,
                 String.class
         );
-        log.info("response: "+response);
+        log.info("response: " + response);
 
         // responseBody에 있는 정보를 꺼냄
         String responseBody = response.getBody();
@@ -163,14 +181,14 @@ public class GoogleService {
             e.printStackTrace();
         }
 
-        log.info("jsonNode: "+jsonNode);
+        log.info("jsonNode: " + jsonNode);
         String uid = jsonNode.get("id").asText();
         String email = jsonNode.get("email").asText();
         String name = jsonNode.get("name").asText();
 
-        userInfo.put("uid",uid);
-        userInfo.put("email",email);
-        userInfo.put("name",name);
+        userInfo.put("uid", uid);
+        userInfo.put("email", email);
+        userInfo.put("name", name);
 
         return userInfo;
     }
