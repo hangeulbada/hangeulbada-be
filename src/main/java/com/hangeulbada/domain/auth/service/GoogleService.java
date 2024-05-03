@@ -1,11 +1,13 @@
 package com.hangeulbada.domain.auth.service;
 
-import com.hangeulbada.domain.auth.entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hangeulbada.domain.auth.component.AuthTokensGenerator;
-import com.hangeulbada.domain.auth.dto.*;
+import com.hangeulbada.domain.auth.dto.AuthTokens;
+import com.hangeulbada.domain.auth.dto.LoginResponse;
+import com.hangeulbada.domain.auth.dto.SignupResponse;
+import com.hangeulbada.domain.auth.entity.User;
 import com.hangeulbada.domain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +61,7 @@ public class GoogleService {
 
     public LoginResponse googleOauth2(String code){
         // code로 access token 요청
-        String accessToken = getGoogleAccessToekn(code, googleRedirectUri);
+        String accessToken = getGoogleAccessToken(code, googleRedirectUri);
         log.info("accessToken: "+accessToken);
         // access token으로 사용자 정보 요청
         HashMap<String, Object> userInfo = getGoogleUserInfo(accessToken);
@@ -74,21 +76,29 @@ public class GoogleService {
         String uid = (String) userInfo.get("uid");
 
         // 이미 가입된 회원인지 확인
-        Optional<User> googleUser = userRepository.findByUid(uid);
-        if(googleUser.isPresent()){
-            log.info("googleUser: "+googleUser.get());
+        Optional<User> user = userRepository.findByUid(uid);
+        if(user.isPresent()){
+            User googleUser = user.get();
             AuthTokens token=authTokensGenerator.generate(uid);
-            return new LoginResponse(googleUser.get().getId(),googleUser.get().getName(),googleUser.get().getEmail(), googleUser.get().getRole(), token);
+            return LoginResponse.builder()
+                    .id(googleUser.getId())
+                    .uid(googleUser.getUid())
+                    .name(googleUser.getName())
+                    .email(googleUser.getEmail())
+                    .role(googleUser.getId())
+                    .token(token)
+                    .build();
         }
         // 가입되지 않은 회원
         else{
+            // TODO: 예외처리
             return new LoginResponse(userInfo.get("uid").toString(),userInfo.get("name").toString(),userInfo.get("email").toString(), null, null);
         }
 
     }
 
     // 인가 code로 accesstoken 요청
-    private String getGoogleAccessToekn(String code, String googleRedirectUri){
+    private String getGoogleAccessToken(String code, String googleRedirectUri){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -101,12 +111,12 @@ public class GoogleService {
         body.add("code", code);
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(body, headers);
+        HttpEntity<MultiValueMap<String, String>> googleTokenRequest = new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://oauth2.googleapis.com/token",
                 HttpMethod.POST,
-                kakaoTokenRequest,
+                googleTokenRequest,
                 String.class
         );
 
@@ -132,12 +142,12 @@ public class GoogleService {
         headers.add("Authorization", "Bearer " + accessToken);
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+        HttpEntity<MultiValueMap<String, String>> googleUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://www.googleapis.com/oauth2/v1/userinfo",
                 HttpMethod.GET,
-                kakaoUserInfoRequest,
+                googleUserInfoRequest,
                 String.class
         );
         log.info("response: "+response);
@@ -164,9 +174,4 @@ public class GoogleService {
 
         return userInfo;
     }
-
-    // 사용자 정보로 회원가입, 로그인 처리
-
-
-
 }
