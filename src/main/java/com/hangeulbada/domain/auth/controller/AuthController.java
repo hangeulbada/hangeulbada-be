@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.auth.controller;
 
+import com.hangeulbada.domain.auth.component.UnsecuredAPI;
 import com.hangeulbada.domain.auth.dto.LoginResponse;
 import com.hangeulbada.domain.auth.dto.SignupResponse;
 import com.hangeulbada.domain.auth.service.GoogleService;
@@ -41,6 +42,7 @@ public class AuthController {
 //    }
     @ResponseBody
     @GetMapping("/login/oauth2/code/google")
+    @UnsecuredAPI
     @Operation(summary = "구글 로그인", description = "구글 로그인 후 redirect되는 back url")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
@@ -71,7 +73,7 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
-
+    @UnsecuredAPI
     public ResponseEntity<LoginResponse> googleSignup(
             @RequestBody SignupResponse signupResponse) {
 
