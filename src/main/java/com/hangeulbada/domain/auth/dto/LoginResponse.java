@@ -1,16 +1,18 @@
 package com.hangeulbada.domain.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Schema(description = "로그인 응답")
 public class LoginResponse {
-    @Schema(description = "사용자 uid", example = "598237442")
+    @Schema(description = "사용자 id (한글바다 id)", example = "107578628897984858117")
+    private String id;
+    @Schema(description = "사용자 uid (Google id)", example = "598237442")
     private String uid;
     @Schema(description = "사용자 이름", example = "홍길동")
     private String name;
@@ -20,14 +22,4 @@ public class LoginResponse {
     private String role;
     @Schema(description = "JWT 토큰")
     private AuthTokens token;
-    @Schema(description = "로그인 실패", example = "로그인 실패")
-    private String message;
-
-    public LoginResponse(String uid, String name, String email, String role, AuthTokens token){
-        this.uid = uid;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.token = token;
-    }
 }

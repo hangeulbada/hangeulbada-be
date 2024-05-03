@@ -5,6 +5,7 @@ import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
+@Tag(name = "Group Controller", description = "클래스 관리 API")
 public class GroupController {
     private final GroupService groupService;
 
