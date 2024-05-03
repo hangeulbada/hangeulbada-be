@@ -14,10 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 
 
@@ -30,15 +26,16 @@ public class OCRService {
 
 
     public List<ScoreDTO> startOcr(OCRRequest ocrRequest){
-        String ocrText = start(ocrRequest.getImageName());
-        log.info("ocrText = " + ocrText);
+        List<String> ocrText = start(ocrRequest.getImageName());
+
         return null;
     }
 
-    public String start(String fileName) {
+    public List<String> start(String fileName) {
 
         try {
-            String S3Url = "https://bada-static-bucket.s3.ap-northeast-2.amazonaws.com/" +fileName+".jpeg";
+            String format = "png";
+            String S3Url = "https://bada-static-bucket.s3.ap-northeast-2.amazonaws.com/" +fileName+"."+format;
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/json");
@@ -52,7 +49,7 @@ public class OCRService {
 
             List<Map<String, String>> images = new ArrayList<>();
             Map<String, String> image = new HashMap<>();
-            image.put("format", "jpeg");
+            image.put("format", format);
             image.put("name", fileName);
             image.put("url", S3Url);
             images.add(image);
@@ -68,9 +65,7 @@ public class OCRService {
                     entity,
                     String.class
             );
-            log.info("response = " + response.toString());
             String result = response.getBody();
-            log.info("result = " + result);
 
             return getInferText(result);
         } catch (Exception e) {
@@ -79,7 +74,7 @@ public class OCRService {
         return null;
     }
 
-    public String getInferText(String str) {
+    public List<String> getInferText(String str) {
         List<String> inferTextList = new ArrayList<>();
 
         JSONObject json = new JSONObject(str);
@@ -95,11 +90,11 @@ public class OCRService {
 
         System.out.println(inferTextList);
 
-        return getPrettyInfer(inferTextList).toString();
+        return getPrettyInfer(inferTextList);
     }
 
     public List<String> getPrettyInfer(List<String> inferTextList) {
-        String concat = inferTextList.toString().replace("[", "").replace("]", "").replace(",", "");
+        String concat = inferTextList.toString().replace("[", "").replace("]", "").replace(",", "").replace(".", "");
 
         char[] chars = concat.toCharArray();
         List<String> resultList = new ArrayList<>();
@@ -149,44 +144,6 @@ public class OCRService {
     }
 
 
-    public void writeMultiPart(OutputStream out, String jsonMessage, File file, String boundary) throws
-            IOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("--").append(boundary).append("\r\n");
-        sb.append("Content-Disposition:form-data; name=\"message\"\r\n\r\n");
-        sb.append(jsonMessage);
-        sb.append("\r\n");
 
-        out.write(sb.toString().getBytes("UTF-8"));
-        out.flush();
-
-        if (file != null && file.isFile()) {
-            out.write(("--" + boundary + "\r\n").getBytes("UTF-8"));
-            StringBuilder fileString = new StringBuilder();
-            fileString
-                    .append("Content-Disposition:form-data; name=\"file\"; filename=");
-            fileString.append("\"" + file.getName() + "\"\r\n");
-            fileString.append("Content-Type: application/octet-stream\r\n\r\n");
-            out.write(fileString.toString().getBytes("UTF-8"));
-            out.flush();
-
-            try (FileInputStream fis = new FileInputStream(file)) {
-                byte[] buffer = new byte[8192];
-                int count;
-                while ((count = fis.read(buffer)) != -1) {
-                    out.write(buffer, 0, count);
-                }
-                out.write("\r\n".getBytes());
-            }
-
-            out.write(("--" + boundary + "--\r\n").getBytes("UTF-8"));
-        }
-        out.flush();
-    }
-
-    public void submit(int studentId, String ocrImage) {
-        System.out.println("studentId = " + studentId);
-        System.out.println("ocrImage = " + ocrImage);
-    }
 
 }
