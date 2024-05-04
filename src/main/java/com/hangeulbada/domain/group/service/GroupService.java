@@ -12,5 +12,6 @@ public interface GroupService{
     List<GroupDTO> getAllGroupById(String id);
     void deleteGroup(String id);
     List<SubmitDTO> getRecentSubmit(String id);
+    boolean isValidRequest(String id, String groupId);
 }
 

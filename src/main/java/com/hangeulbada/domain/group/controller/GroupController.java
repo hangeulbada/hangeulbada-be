@@ -48,7 +48,11 @@ public class GroupController {
 
     @GetMapping("/group/{groupId}")
     @Operation(summary = "특정 클래스 조회", description = "특정 클래스를 조회합니다.")
-    public ResponseEntity<GroupDTO> getGroup(@PathVariable String groupId){
+    public ResponseEntity<GroupDTO> getGroup(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        log.info("valid users group request");
         GroupDTO groupList = groupService.getGroup(groupId);
         return ResponseEntity.ok(groupList);
     }
@@ -56,13 +60,19 @@ public class GroupController {
     @DeleteMapping("/group/{groupId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "클래스 삭제", description = "클래스를 삭제합니다.")
-    public void deleteGroup(@PathVariable String groupId){
+    public void deleteGroup(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            log.warn("invalid user's delete request");
+        }
         groupService.deleteGroup(groupId);
     }
 
     @GetMapping("/group/{groupId}/submit")
     @Operation(summary = "클래스의 학생들이 푼 문제집", description = "클래스의 학생들이 푼 문제집을 조회합니다.")
-    public ResponseEntity<List<SubmitDTO>> getSubmit(@PathVariable String groupId){
+    public ResponseEntity<List<SubmitDTO>> getSubmit(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         List<SubmitDTO> submitList = groupService.getRecentSubmit(groupId);
         return ResponseEntity.ok(submitList);
     }

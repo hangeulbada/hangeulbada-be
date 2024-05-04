@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/ocr")
+@RequestMapping("/api/ocr")
 @RequiredArgsConstructor
 public class OCRController {
     private final OCRService ocrService;

@@ -24,6 +24,12 @@ public class GroupServiceImpl implements GroupService{
     private final AssignmentService assignmentService;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
 
+    @Override
+    public boolean isValidRequest(String id, String groupId){
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        return group.getTeacherId().equals(id);
+    }
+
     private String generateGroupCode(){
         StringBuilder codeBuilder = new StringBuilder();
         Random random = new Random();
