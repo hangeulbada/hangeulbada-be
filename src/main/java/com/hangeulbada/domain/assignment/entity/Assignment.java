@@ -4,6 +4,7 @@ import lombok.Data;
 import nonapi.io.github.classgraph.json.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -15,4 +16,6 @@ public class Assignment {
     private String workbookId;
     private Map<Integer, Boolean> string;
     private Map<Integer, String> content;
+    private String score;
+    private LocalDateTime submitDate;
 }
