@@ -32,6 +32,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             if (isValidAccessToken(token)) {
+                log.info("Valid Access Token");
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 log.info("auth" + auth);
                 SecurityContextHolder.getContext().setAuthentication(auth);
@@ -61,10 +62,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     private boolean isValidAccessToken(String token) {
         try {
-            log.info("Token validation");
             return !extractAllClaims(token).getExpiration().before(new java.util.Date());
         } catch (Exception e) {
-            log.info("Token validation error: " + e.getMessage());
             return false;
         }
     }

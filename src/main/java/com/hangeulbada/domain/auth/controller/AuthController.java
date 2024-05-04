@@ -6,6 +6,8 @@ import com.hangeulbada.domain.auth.dto.SignupResponse;
 import com.hangeulbada.domain.auth.service.GoogleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,44 +28,34 @@ public class AuthController {
 
     private final GoogleService googleService;
 
-    //web 버전
-//    @ResponseBody
-//    @GetMapping("/oauth2/kakao")
-//    @ApiOperation(value = "웹 카카오 로그인", notes = "웹 프론트 버전 카카오 로그인")
-//    public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam String code, HttpServletRequest request) {
-//        try {
-//            // 현재 도메인 확인
-//            String currentDomain = request.getServerName();
-//            return ResponseEntity.ok(kakaoService.kakaoLogin(code, currentDomain));
-//        } catch (NoSuchElementException e) {
-//
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Not Found");
-//        }
-//    }
     @ResponseBody
     @GetMapping("/login/oauth2/code/google")
     @UnsecuredAPI
     @Operation(summary = "구글 로그인", description = "구글 로그인 후 redirect되는 back url")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "401", description = "로그인 실패<br>message=\"로그인 실패\"<br>role 선택 후 회원가입(/login/oauth2/code/google/signup) 필요")
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
+            content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "401", description = "회원가입 필요",
+            content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "404", description = "유효하지 않은 인가 code")
     })
-    public ResponseEntity<LoginResponse> googleRedirectUri(
+    public ResponseEntity<?> googleRedirectUri(
             @Parameter(description = "구글 로그인 후 리다이렉트 URI로 전달받은 code") @RequestParam String code)
     {
         try {
             LoginResponse response = googleService.googleOauth2(code);
+            // 로그인 성공
             if (response.getToken()!=null){
                 return ResponseEntity.ok(response);
             }
+            // 회원가입 필요
             else{
-                // 로그인 실패시 response 보내면서 실패 메시지 전달
-                response.setMessage("로그인 실패");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
-        } catch (NoSuchElementException e) {
-
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Not Found");
+        }
+        // 유효하지 않은 code
+        catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 code입니다.");
         }
     }
 
@@ -74,9 +66,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
     @UnsecuredAPI
-    public ResponseEntity<LoginResponse> googleSignup(
-            @RequestBody SignupResponse signupResponse) {
-
+    public ResponseEntity<LoginResponse> googleSignup(@RequestBody SignupResponse signupResponse) {
         return ResponseEntity.ok(googleService.googleSignup(signupResponse));
 
     }
