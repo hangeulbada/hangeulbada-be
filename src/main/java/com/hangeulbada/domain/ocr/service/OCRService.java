@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.ocr.service;
 
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
+import com.hangeulbada.domain.assignment.service.AssignmentService;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,16 @@ public class OCRService {
     @Value("${clova.ocr.secretkey}") String secretKey;
     @Value("${clova.ocr.api.url}") String apiURL;
 
+    private final AssignmentService assignmentService;
+
 
     public List<ScoreDTO> startOcr(OCRRequest ocrRequest){
         List<String> ocrText = start(ocrRequest.getImageName());
+        // principal로 대체 필요
+        String studentId = "2342304";
+        String workbookId = "1";
+        return assignmentService.getScores(studentId, workbookId, ocrText);
 
-        return null;
     }
 
     public List<String> start(String fileName) {
