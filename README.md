@@ -1,4 +1,6 @@
 # 2024-1 Capstone Design Project - 한글바다
+## Build
+[![hangeul-bada api server CI/CD](https://github.com/2024-1-Capstone-Design/back-end/actions/workflows/main.yml/badge.svg)](https://github.com/2024-1-Capstone-Design/back-end/actions/workflows/main.yml)
 ## Spring boot
 ### 패키지 구조  
 도메인형  
