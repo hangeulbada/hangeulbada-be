@@ -3,12 +3,14 @@ package com.hangeulbada.domain.workbookset.service.impl;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
+import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +26,13 @@ public class WorkbookServiceImpl implements WorkbookService {
 
 
     @Override
-    public WorkbookDto createWorkbook(WorkbookRequestDTO workbookDto) {
+    public WorkbookDto createWorkbook(String teacherId, WorkbookRequestDTO workbookDto) {
         Workbook workbook = Workbook.builder()
+                .teacherId(teacherId) // 현재 로그인 된 유저의 userId를 사용
                 .description(workbookDto.getDescription())
                 .difficulty(workbookDto.getDifficulty())
                 .endDate(workbookDto.getEndDate())
                 .startDate(workbookDto.getStartDate())
-                .teacherId(workbookDto.getTeacherId())
                 .title(workbookDto.getTitle())
                 .build();
         log.info("workbook: {}", workbook);
@@ -39,8 +41,8 @@ public class WorkbookServiceImpl implements WorkbookService {
     }
 
     @Override
-    public List<WorkbookDto> getWorkbookList() {
-        List<Workbook> workbookList = workbookRepository.findAll();
+    public List<WorkbookDto> getWorkbookList(String teacherId) {
+        List<Workbook> workbookList = workbookRepository.findByTeacherId(teacherId);
         return workbookList.stream().map(workbook -> mapper.map(workbook, WorkbookDto.class)).collect(Collectors.toList());
     }
 
@@ -52,7 +54,11 @@ public class WorkbookServiceImpl implements WorkbookService {
     }
 
     @Override
-    public void deleteWorkbook(String workbookId) {
+    public void deleteWorkbook(String teacherId, String workbookId) {
+        Workbook workbook = workbookRepository.findById(workbookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
+        if (!workbook.getTeacherId().equals(teacherId))
+            throw new NotAuthorizedException("작성자만 삭제할 수 있습니다.");
         workbookRepository.deleteById(workbookId);
     }
 }
