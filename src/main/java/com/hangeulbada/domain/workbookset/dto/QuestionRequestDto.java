@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "QuestionRequestDto Model")
 public class QuestionRequestDto {
-    private String teacherId;
     private String content;
 }
