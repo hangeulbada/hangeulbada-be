@@ -8,7 +8,7 @@ public class NotAuthorizedException extends RuntimeException{
     private String message;
 
     public NotAuthorizedException(String message) {
-        super(String.format(message));
+        super(message);
         this.message = message;
     }
 }

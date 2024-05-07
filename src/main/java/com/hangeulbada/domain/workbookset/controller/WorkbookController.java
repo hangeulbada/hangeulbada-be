@@ -43,7 +43,7 @@ public class WorkbookController {
     }
 
     @DeleteMapping("/{workbookId}")
-    @Operation(summary = "세트 삭제", description = "workbookId로 세트를 삭제합니다. 현재 로그인 한 유저가 작성한 것이 아닐 경우 \"작성자만 삭제할 수 있습니다.\"라는 메시지로 exception을 발생시킵니다.")
+    @Operation(summary = "세트 삭제", description = "workbookId로 세트를 삭제합니다. 현재 로그인 한 유저가 작성한 것이 아닐 경우 \"작성자만 삭제할 수 있습니다.\"라는 message를 가진 exception을 발생시킵니다.")
     public ResponseEntity<String> deleteWorkbookById(@PathVariable(name="workbookId") String id, Principal principal){
         workbookService.deleteWorkbook(principal.getName(), id);
         return new ResponseEntity<>("정상적으로 세트가 삭제되었습니다.",HttpStatus.OK);
