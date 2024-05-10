@@ -29,7 +29,7 @@ public class GroupController {
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
     @ApiResponse(responseCode = "201", description = "클래스 생성 성공")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupRequest request, Principal principal){
-        GroupDTO group = groupService.createGroup(principal.getName(), request.getGroupName());
+        GroupDTO group = groupService.createGroup(principal.getName(), request);
         return ResponseEntity.ok(group);
     }
 
