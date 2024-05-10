@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.group.service;
 
 import com.hangeulbada.domain.group.dto.GroupDTO;
+import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
@@ -53,10 +54,11 @@ public class GroupServiceImpl implements GroupService{
     }
     @Override
     @Transactional
-    public GroupDTO createGroup(String id, String groupName) {
+    public GroupDTO createGroup(String id, GroupRequest request) {
         GroupDTO group = GroupDTO.builder()
                 .id(null)
-                .groupName(groupName)
+                .groupName(request.getGroupName())
+                .description(request.getDescription())
                 .teacherId(id)
                 .groupCode(generateGroupCode())
                 .build();
