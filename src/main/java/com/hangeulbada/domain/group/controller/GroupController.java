@@ -23,7 +23,6 @@ import java.util.List;
 @Tag(name = "Group Controller", description = "클래스 관리 API")
 public class GroupController {
     private final GroupService groupService;
-
     @PostMapping("/group")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
