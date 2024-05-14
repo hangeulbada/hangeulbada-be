@@ -88,14 +88,7 @@ public class GroupService{
             }
             group.getStudentIds().add(studentId);
             groupRepository.save(group);
-            GroupDTO groupDTO = mapper.map(group, GroupDTO.class);
-            return GroupAttendResponse.builder()
-                    .id(groupDTO.getId())
-                    .groupName(groupDTO.getGroupName())
-                    .description(groupDTO.getDescription())
-                    .teacherId(groupDTO.getTeacherId())
-                    .groupCode(groupDTO.getGroupCode())
-                    .build();
+            return mapper.map(group, GroupAttendResponse.class);
         }
         return null;
     }
@@ -111,11 +104,13 @@ public class GroupService{
         }
     }
 
-    public List<GroupDTO> getAttendGroup(String studentId){
+    public List<GroupAttendResponse> getAttendGroup(String studentId){
         List<Group> groups = groupRepository.findByStudentIdsContaining(studentId);
         return groups.stream()
-                .map(group -> mapper.map(group, GroupDTO.class))
+                .map(group -> mapper.map(group, GroupAttendResponse.class))
                 .collect(Collectors.toList());
+
+
     }
 
     @Transactional

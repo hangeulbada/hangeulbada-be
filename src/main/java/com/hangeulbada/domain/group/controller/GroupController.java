@@ -92,7 +92,7 @@ public class GroupController {
     }
 
     @StudentTag
-    @PostMapping("/group/attend")
+    @PostMapping("/student/attend")
     @Operation(summary = "클래스 참여", description = "학생이 클래스 코드를 이용하여 클래스에 참여합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 참여 성공")
     @ApiResponse(responseCode = "403", description = "이미 클래스에 참여하고 있음")
@@ -106,19 +106,18 @@ public class GroupController {
         }
     }
     @StudentTag
-    @DeleteMapping("/group/{groupId}/student")
+    @DeleteMapping("/student/group/{groupId}")
     @Operation(summary = "클래스 탈퇴", description = "학생이 클래스를 탈퇴합니다.")
     @ApiResponse(responseCode = "204", description = "클래스 탈퇴 성공")
     public void leaveGroup(@PathVariable String groupId, Principal principal){
         groupService.leaveGroup(groupId, principal.getName());
     }
     @StudentTag
-    @PostMapping("/group/attend")
     @GetMapping("/student/group")
     @Operation(summary = "학생의 클래스 조회", description = "학생이 참여한 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
     public ResponseEntity<?> getAttendGroup(Principal principal){
-        List<GroupDTO> group = groupService.getAttendGroup(principal.getName());
+        List<GroupAttendResponse> group = groupService.getAttendGroup(principal.getName());
         return ResponseEntity.ok(group);
     }
 }

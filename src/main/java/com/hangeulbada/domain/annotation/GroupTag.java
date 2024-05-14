@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Tag(name = "Group Controller", description = "클래스 관련 API입니다.")
+@Tag(name = "Group", description = "클래스 관련 API입니다.")
 public @interface GroupTag {
 }
 
