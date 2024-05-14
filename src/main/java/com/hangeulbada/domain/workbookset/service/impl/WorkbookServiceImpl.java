@@ -27,14 +27,10 @@ public class WorkbookServiceImpl implements WorkbookService {
 
     @Override
     public WorkbookDto createWorkbook(String teacherId, WorkbookRequestDTO workbookDto) {
-        Workbook workbook = Workbook.builder()
-                .teacherId(teacherId) // 현재 로그인 된 유저의 userId를 사용
-                .description(workbookDto.getDescription())
-                .difficulty(workbookDto.getDifficulty())
-                .endDate(workbookDto.getEndDate())
-                .startDate(workbookDto.getStartDate())
-                .title(workbookDto.getTitle())
-                .build();
+
+        Workbook workbook = mapper.map(workbookDto, Workbook.class);
+        workbook.setTeacherId(teacherId);
+
         log.info("workbook: {}", workbook);
         workbookRepository.save(workbook);
         return mapper.map(workbook, WorkbookDto.class);
