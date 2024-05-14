@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +29,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final WorkbookRepository workbookRepository;
     private final ModelMapper mapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
@@ -87,6 +89,34 @@ public class QuestionServiceImpl implements QuestionService {
         return mapper.map(newQuestion, QuestionDto.class);
     }
 
+    @Override
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<String> questions) {
+        Workbook w = workbookRepository.findById(workbookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
+        List<String> questionIds = new ArrayList<>();
+        for(String q : questions){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).build();
+            Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
+            questionIds.add(newQuestion.getId());
+        }
+        w.setQuestionIds(questionIds);
+        workbookRepository.save(w);
+        return mapper.map(w, WorkbookDto.class);
+    }
+
+    @Override
+    public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<String> questionIds) {
+        Workbook w = workbookRepository.findById(workbookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
+        List<String> qIds = new ArrayList<>();
+        for(String q : questionIds){
+            Optional<Question> question = questionRepository.findById(q);
+            if (!question.isEmpty()) qIds.add(q);
+        }
+        w.setQuestionIds(qIds);
+        workbookRepository.save(w);
+        return mapper.map(w, WorkbookDto.class);
+    }
 
     @Override
     public QuestionDto getQuestionById(String workbookId, String questionId) {
