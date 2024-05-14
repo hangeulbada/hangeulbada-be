@@ -1,10 +1,11 @@
 package com.hangeulbada.domain.group.controller;
 
+import com.hangeulbada.domain.annotation.GroupTag;
+import com.hangeulbada.domain.annotation.StudentTag;
 import com.hangeulbada.domain.group.dto.*;
 import com.hangeulbada.domain.group.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-@Tag(name = "Group Controller", description = "클래스 관리 API")
 public class GroupController {
     private final GroupService groupService;
+
+    @GroupTag
     @PostMapping("/group")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
@@ -30,6 +32,7 @@ public class GroupController {
         return ResponseEntity.ok(group);
     }
 
+    @GroupTag
     @GetMapping("/group")
     @Operation(summary = "모든 클래스 조회", description = "모든 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
@@ -47,6 +50,7 @@ public class GroupController {
         return ResponseEntity.ok(group);
     }
 
+    @GroupTag
     @GetMapping("/group/{groupId}")
     @Operation(summary = "특정 클래스 조회", description = "특정 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
@@ -60,6 +64,7 @@ public class GroupController {
         return ResponseEntity.ok(groupList);
     }
 
+    @GroupTag
     @DeleteMapping("/group/{groupId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "클래스 삭제", description = "클래스를 삭제합니다.")
@@ -72,6 +77,8 @@ public class GroupController {
         groupService.deleteGroup(groupId);
     }
 
+
+    @GroupTag
     @GetMapping("/group/{groupId}/submit")
     @Operation(summary = "클래스의 학생들이 푼 문제집", description = "클래스의 학생들이 푼 문제집을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스의 학생들이 푼 문제집 조회 성공")
@@ -84,6 +91,7 @@ public class GroupController {
         return ResponseEntity.ok(submitList);
     }
 
+    @StudentTag
     @PostMapping("/group/attend")
     @Operation(summary = "클래스 참여", description = "학생이 클래스 코드를 이용하여 클래스에 참여합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 참여 성공")
@@ -97,14 +105,15 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 클래스에 참여하고 있습니다.");
         }
     }
-
+    @StudentTag
     @DeleteMapping("/group/{groupId}/student")
     @Operation(summary = "클래스 탈퇴", description = "학생이 클래스를 탈퇴합니다.")
     @ApiResponse(responseCode = "204", description = "클래스 탈퇴 성공")
     public void leaveGroup(@PathVariable String groupId, Principal principal){
         groupService.leaveGroup(groupId, principal.getName());
     }
-
+    @StudentTag
+    @PostMapping("/group/attend")
     @GetMapping("/student/group")
     @Operation(summary = "학생의 클래스 조회", description = "학생이 참여한 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
