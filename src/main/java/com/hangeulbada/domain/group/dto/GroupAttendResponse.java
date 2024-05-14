@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupRequest {
+public class GroupAttendResponse {
+    private String id;
     private String groupName;
     private String description;
+    private String teacherId;
+    private String groupCode;
 }

@@ -14,6 +14,7 @@ public class Group{
     @Id
     private String id;
     private String groupName;
+    private String description;
     private String teacherId;
     private String groupCode;
     private List<String> studentIds;
