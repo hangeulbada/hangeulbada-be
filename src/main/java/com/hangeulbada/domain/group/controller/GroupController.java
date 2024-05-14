@@ -98,4 +98,18 @@ public class GroupController {
         }
     }
 
+    @DeleteMapping("/group/{groupId}/student")
+    @Operation(summary = "클래스 탈퇴", description = "학생이 클래스를 탈퇴합니다.")
+    @ApiResponse(responseCode = "204", description = "클래스 탈퇴 성공")
+    public void leaveGroup(@PathVariable String groupId, Principal principal){
+        groupService.leaveGroup(groupId, principal.getName());
+    }
+
+    @GetMapping("/student/group")
+    @Operation(summary = "학생의 클래스 조회", description = "학생이 참여한 클래스를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
+    public ResponseEntity<?> getAttendGroup(Principal principal){
+        List<GroupDTO> group = groupService.getAttendGroup(principal.getName());
+        return ResponseEntity.ok(group);
+    }
 }

@@ -26,4 +26,6 @@ public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByTeacherId(String teacherId);
 
     Optional<Group> findByGroupCode(String code);
+
+    List<Group> findByStudentIdsContaining(String studentId);
 }
