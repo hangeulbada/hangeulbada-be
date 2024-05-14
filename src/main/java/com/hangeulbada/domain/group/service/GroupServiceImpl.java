@@ -104,14 +104,6 @@ public class GroupServiceImpl implements GroupService{
         return null;
     }
 
-    @Override
-    @Transactional
-    public List<GroupDTO> getAllGroup() {
-        List<Group> groups = groupRepository.findAll();
-        return groups.stream()
-                .map(group -> mapper.map(group, GroupDTO.class))
-                .collect(Collectors.toList());
-    }
 
     @Override
     @Transactional
