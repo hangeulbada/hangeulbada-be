@@ -4,6 +4,7 @@ import com.hangeulbada.domain.auth.component.UnsecuredAPI;
 import com.hangeulbada.domain.auth.dto.LoginResponse;
 import com.hangeulbada.domain.auth.dto.SignupResponse;
 import com.hangeulbada.domain.auth.service.GoogleService;
+import com.hangeulbada.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,10 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final GoogleService googleService;
+    private final UserService userService;
 
 //    @ResponseBody
 //    @GetMapping("/login/oauth2/code/google")
@@ -73,4 +74,13 @@ public class AuthController {
         //회원가입
         return new ResponseEntity<>(googleService.googleSignup(signupResponse), HttpStatus.CREATED);
     }
+
+    @ResponseBody
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴")
+    @DeleteMapping("/user")
+    public void deleteUser(Principal principal){
+        userService.deleteUser(principal.getName());
+    }
+
+
 }
