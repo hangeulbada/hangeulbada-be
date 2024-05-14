@@ -1,8 +1,6 @@
 package com.hangeulbada.domain.group.controller;
 
-import com.hangeulbada.domain.group.dto.GroupDTO;
-import com.hangeulbada.domain.group.dto.GroupRequest;
-import com.hangeulbada.domain.group.dto.SubmitDTO;
+import com.hangeulbada.domain.group.dto.*;
 import com.hangeulbada.domain.group.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -84,6 +82,20 @@ public class GroupController {
         }
         List<SubmitDTO> submitList = groupService.getRecentSubmit(groupId);
         return ResponseEntity.ok(submitList);
+    }
+
+    @PostMapping("/group/attend")
+    @Operation(summary = "클래스 참여", description = "학생이 클래스 코드를 이용하여 클래스에 참여합니다.")
+    @ApiResponse(responseCode = "200", description = "클래스 참여 성공")
+    @ApiResponse(responseCode = "403", description = "이미 클래스에 참여하고 있음")
+    public ResponseEntity<?> attendGroup(@RequestBody GroupAttendRequest groupAttendRequest, Principal principal){
+        try{
+            GroupAttendResponse group = groupService.attendGroup(groupAttendRequest.getGroupCode(), principal.getName());
+            return ResponseEntity.ok(group);
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 클래스에 참여하고 있습니다.");
+        }
     }
 
 }

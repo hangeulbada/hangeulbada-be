@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.group.service;
 
+import com.hangeulbada.domain.group.dto.GroupAttendResponse;
 import com.hangeulbada.domain.group.dto.GroupDTO;
 import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -76,6 +78,33 @@ public class GroupServiceImpl implements GroupService{
     }
 
     @Override
+    public GroupAttendResponse attendGroup(String code, String studentId) {
+        log.info("code: "+code+" studentId: "+studentId);
+        Optional<Group> tmpGroup = groupRepository.findByGroupCode(code);
+        log.info("group: "+tmpGroup);
+        if(tmpGroup.isPresent()){
+            Group group = tmpGroup.get();
+            if(group.getStudentIds() == null){
+                group.setStudentIds(new ArrayList<>());
+            }
+            if(group.getStudentIds().contains(studentId)){
+                throw new IllegalArgumentException("이미 그룹에 참여하고 있습니다.");
+            }
+            group.getStudentIds().add(studentId);
+            groupRepository.save(group);
+            GroupDTO groupDTO = mapper.map(group, GroupDTO.class);
+            return GroupAttendResponse.builder()
+                    .id(groupDTO.getId())
+                    .groupName(groupDTO.getGroupName())
+                    .description(groupDTO.getDescription())
+                    .teacherId(groupDTO.getTeacherId())
+                    .groupCode(groupDTO.getGroupCode())
+                    .build();
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
     public List<GroupDTO> getAllGroup() {
         List<Group> groups = groupRepository.findAll();
@@ -104,4 +133,7 @@ public class GroupServiceImpl implements GroupService{
     public List<SubmitDTO> getRecentSubmit(String groupId){
         return groupRepository.getRecentSubmit(groupId);
     }
+
+
+
 }
