@@ -85,7 +85,6 @@ public class QuestionServiceImpl implements QuestionService {
         }
         w.getQuestionIds().add(newQuestion.getId());
         workbookRepository.save(w);
-
         return mapper.map(newQuestion, QuestionDto.class);
     }
 

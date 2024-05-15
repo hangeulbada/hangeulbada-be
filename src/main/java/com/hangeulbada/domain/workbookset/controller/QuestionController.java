@@ -36,13 +36,7 @@ public class QuestionController {
         return new ResponseEntity<>("성공적으로 문제가 삭제되었습니다.", HttpStatus.OK);
     }
 
-//    @PostMapping("/workbook/{workbookId}/questions")
-//    @Operation(summary = "문제 생성", description = "세트 내에 문제를 생성합니다.")
-//    public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
-//                                                      @Valid @RequestBody QuestionRequestDto questionDto,
-//                                                      Principal principal){
-//        return new ResponseEntity<>(questionService.createQuestion(principal.getName(), workbookId, questionDto), HttpStatus.CREATED);
-//    }
+
 
     @PostMapping("/workbook/{workbookId}/questions/new")
     @Operation(summary = "문제 생성", description = "세트 내에 문제를 생성합니다.")
@@ -65,12 +59,31 @@ public class QuestionController {
         return new ResponseEntity<>(questionService.getQuestionById(workbookId,questionId), HttpStatus.OK);
     }
 
+
+
     @PostMapping("/workbook/{workbookId}/questions/existing")
-    @Operation(summary = "기존 문제 세트에 추가", description = "이미 작성되어 있던 문제를 세트에 추가합니다.")
+    @Operation(summary = "기존 문제로 세트 구성", description = "이미 작성되어 있던 문제들을 세트에 추가합니다.")
     public ResponseEntity<String> getAlreadyExistingQuestionToAdd(@PathVariable(name="workbookId")String workbookId,
                                                                   @Valid @RequestBody List<String> questionIds,
                                                                        Principal principal){
         questionService.getAlreadyExistingQuestionToAdd(principal.getName(), workbookId, questionIds);
+        return new ResponseEntity<>("문제가 성공적으로 추가되었습니다.", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/workbook/{workbookId}/questions")
+    @Operation(summary = "새 문제를 기존 세트에 추가", description = "기존 세트 내에 문제를 추가합니다 (한 문장 추가).")
+    public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
+                                                      @Valid @RequestBody QuestionRequestDto questionDto,
+                                                      Principal principal){
+        return new ResponseEntity<>(questionService.createQuestion(principal.getName(), workbookId, questionDto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/workbook/{workbookId}/questions/{questionId}")
+    @Operation(summary = "기존 문제 기존 세트에 추가", description = "이미 작성되어 있던 문제를 세트에 추가합니다.(한 문제 추가)")
+    public ResponseEntity<String> addAlreadyExistingQuestionToWorkbook(@PathVariable(name="workbookId")String workbookId,
+                                                                       @PathVariable(name="questionId")String questionId,
+                                                                       Principal principal){
+        questionService.addAlreadyExistingQuestion(principal.getName(), workbookId, questionId);
         return new ResponseEntity<>("문제가 성공적으로 추가되었습니다.", HttpStatus.CREATED);
     }
 
