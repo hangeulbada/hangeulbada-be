@@ -104,13 +104,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<String> questionIds) {
+    public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<QuestionRequestDto> questionIds) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> qIds = new ArrayList<>();
-        for(String q : questionIds){
-            Optional<Question> question = questionRepository.findById(q);
-            if (!question.isEmpty()) qIds.add(q);
+        for(QuestionRequestDto q : questionIds){
+            String qId = q.getContent();
+            Optional<Question> question = questionRepository.findById(qId);
+            if (!question.isEmpty()) qIds.add(qId);
         }
         w.setQuestionIds(qIds);
         workbookRepository.save(w);
