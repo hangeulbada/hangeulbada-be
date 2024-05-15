@@ -89,12 +89,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<String> questions) {
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionRequestDto> questions) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
-        for(String q : questions){
-            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).build();
+        for(QuestionRequestDto q : questions){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
         }
