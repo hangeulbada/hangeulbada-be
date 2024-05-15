@@ -12,7 +12,7 @@ public class NotAuthorizedException extends RuntimeException{
     private HttpStatus status;
 
     public NotAuthorizedException(String message) {
-        super(message);
+        this.message = message;
         this.status = HttpStatus.UNAUTHORIZED;
     }
 }
