@@ -52,7 +52,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<WorkbookDto> getQuestionsToCreate(@PathVariable(name = "workbookId") String workbookId,
-                                                            @Valid @RequestBody List<String> questions,
+                                                            @Valid @RequestBody List<QuestionRequestDto> questions,
                                                             Principal principal){
         return new ResponseEntity<>(questionService.getQuestionsToCreate(principal.getName(), workbookId, questions), HttpStatus.CREATED);
     }
@@ -82,7 +82,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<String> getAlreadyExistingQuestionToAdd(@PathVariable(name="workbookId")String workbookId,
-                                                                  @Valid @RequestBody List<String> questionIds,
+                                                                  @Valid @RequestBody List<QuestionRequestDto> questionIds,
                                                                        Principal principal){
         questionService.getAlreadyExistingQuestionToAdd(principal.getName(), workbookId, questionIds);
         return new ResponseEntity<>("문제가 성공적으로 추가되었습니다.", HttpStatus.CREATED);

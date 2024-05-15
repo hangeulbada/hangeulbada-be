@@ -12,8 +12,8 @@ public interface QuestionService {
     void deleteQuestion(String teacherId, String questionId);
     List<QuestionDto> getAllQuestions(String teacherId);
     QuestionDto createQuestion(String teacherId, String workbookId, QuestionRequestDto questionsDto);
-    WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<String> questions);
-    WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<String> questionIds);
+    WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionRequestDto> questions);
+    WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<QuestionRequestDto> questionIds);
     QuestionDto getQuestionById(String workbookId, String questionId);
     void deleteQuestionFromWorkbook(String teacherId, String workbookId, String questionId);
     void addAlreadyExistingQuestion(String teacherId, String workbookId, String questionId);

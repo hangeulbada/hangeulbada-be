@@ -14,7 +14,7 @@ public class WorkbookException extends RuntimeException{
 
     public WorkbookException(HttpStatus status, String message) {
         super(message);
-        this.status = status;
+        this.status = HttpStatus.BAD_REQUEST;
         this.message = message;
     }
 }
