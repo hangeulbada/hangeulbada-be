@@ -1,6 +1,5 @@
 package com.hangeulbada.domain.workbookset.repository;
 
-import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
