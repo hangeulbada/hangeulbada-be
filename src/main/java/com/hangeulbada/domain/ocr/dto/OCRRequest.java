@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 @Schema(description = "OCR 요청")
 public class OCRRequest {
-    @Schema(description = "학생 uid", example = "598237442")
-    private String studentUid;
-    @Schema(description = "OCR 이미지 S3 주소", example = "/ocr_image.jpg")
-    private String ocrImage;
+    @Schema(description = "OCR 이미지 파일명", example = "{studentId}_{workbookId}")
+    private String imageName;
 }

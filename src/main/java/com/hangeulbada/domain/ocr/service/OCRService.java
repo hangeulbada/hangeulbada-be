@@ -1,18 +1,21 @@
 package com.hangeulbada.domain.ocr.service;
 
+import com.hangeulbada.domain.assignment.dto.ScoreDTO;
+import com.hangeulbada.domain.assignment.service.AssignmentService;
+import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -22,70 +25,62 @@ public class OCRService {
     @Value("${clova.ocr.secretkey}") String secretKey;
     @Value("${clova.ocr.api.url}") String apiURL;
 
-    public static String imageFile = "D:\\hangeul_bada\\src\\main\\resources\\static\\ocr_1.png";
+    private final AssignmentService assignmentService;
 
-    public String start() {
+
+    public List<ScoreDTO> startOcr(OCRRequest ocrRequest){
+        List<String> ocrText = start(ocrRequest.getImageName());
+        // principal로 대체 필요
+        String studentId = "2342304";
+        String workbookId = "1";
+        return assignmentService.getScores(studentId, workbookId, ocrText);
+
+    }
+
+    public List<String> start(String fileName) {
+
         try {
-            URL url = new URL(apiURL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setUseCaches(false);
-            con.setDoInput(true);
-            con.setDoOutput(true);
-            con.setReadTimeout(30000);
-            con.setRequestMethod("POST");
-            String boundary = "----" + UUID.randomUUID().toString().replaceAll("-", "");
-            con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            con.setRequestProperty("X-OCR-SECRET", secretKey);
+            String format = "png";
+            String S3Url = "https://bada-static-bucket.s3.ap-northeast-2.amazonaws.com/" +fileName+"."+format;
 
-            JSONObject json = new JSONObject();
-            json.put("version", "V2");
-            json.put("requestId", UUID.randomUUID().toString());
-            json.put("timestamp", System.currentTimeMillis());
-            JSONObject image = new JSONObject();
-            image.put("format", "jpg");
-            image.put("name", "demo");
-            JSONArray images = new JSONArray();
-            System.out.println("image = " + image.toString());
-            images.put(image);
-            json.put("images", images);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", "application/json");
+            headers.add("X-OCR-SECRET", secretKey);
 
-            String postParams = json.toString();
+            Map<String, Object> body = new HashMap<>();
+            body.put("lang", "ko");
+            body.put("version", "V2");
+            body.put("requestId", UUID.randomUUID().toString());
+            body.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
-            con.connect();
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            long start = System.currentTimeMillis();
-            File file = new File(imageFile);
-            writeMultiPart(wr, postParams, file, boundary);
-            wr.close();
+            List<Map<String, String>> images = new ArrayList<>();
+            Map<String, String> image = new HashMap<>();
+            image.put("format", format);
+            image.put("name", fileName);
+            image.put("url", S3Url);
+            images.add(image);
 
-            int responseCode = con.getResponseCode();
-            BufferedReader br;
-            if (responseCode == 200) {
-                br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            } else {
-                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-            }
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+            body.put("images", images); // Directly put the List as an object, not a string
 
-            while ((inputLine = br.readLine()) != null) {
-                response.append(inputLine);
-            }
-            br.close();
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-            // response to json
-            String parsedResponse = getInferText(response.toString());
+            RestTemplate rt = new RestTemplate();
+            ResponseEntity<String> response = rt.exchange(
+                    apiURL,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+            String result = response.getBody();
 
-            System.out.println(parsedResponse);
-            return parsedResponse;
+            return getInferText(result);
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("e1" + e);
         }
-//        getPrettyInfer(List.of("6", "밝은 해임치", "7 방화", "게해에 을세워요", "8", "좋은", "책을 많이", "있짜", "9", "6학년이", "됐던 좋아", "10"," 받아쓰기는", "종요해"));
         return null;
     }
 
-    public String getInferText(String str) {
+    public List<String> getInferText(String str) {
         List<String> inferTextList = new ArrayList<>();
 
         JSONObject json = new JSONObject(str);
@@ -101,11 +96,11 @@ public class OCRService {
 
         System.out.println(inferTextList);
 
-        return getPrettyInfer(inferTextList).toString();
+        return getPrettyInfer(inferTextList);
     }
 
     public List<String> getPrettyInfer(List<String> inferTextList) {
-        String concat = inferTextList.toString().replace("[", "").replace("]", "").replace(",", "");
+        String concat = inferTextList.toString().replace("[", "").replace("]", "").replace(",", "").replace(".", "");
 
         char[] chars = concat.toCharArray();
         List<String> resultList = new ArrayList<>();
@@ -155,44 +150,6 @@ public class OCRService {
     }
 
 
-    public void writeMultiPart(OutputStream out, String jsonMessage, File file, String boundary) throws
-            IOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("--").append(boundary).append("\r\n");
-        sb.append("Content-Disposition:form-data; name=\"message\"\r\n\r\n");
-        sb.append(jsonMessage);
-        sb.append("\r\n");
 
-        out.write(sb.toString().getBytes("UTF-8"));
-        out.flush();
-
-        if (file != null && file.isFile()) {
-            out.write(("--" + boundary + "\r\n").getBytes("UTF-8"));
-            StringBuilder fileString = new StringBuilder();
-            fileString
-                    .append("Content-Disposition:form-data; name=\"file\"; filename=");
-            fileString.append("\"" + file.getName() + "\"\r\n");
-            fileString.append("Content-Type: application/octet-stream\r\n\r\n");
-            out.write(fileString.toString().getBytes("UTF-8"));
-            out.flush();
-
-            try (FileInputStream fis = new FileInputStream(file)) {
-                byte[] buffer = new byte[8192];
-                int count;
-                while ((count = fis.read(buffer)) != -1) {
-                    out.write(buffer, 0, count);
-                }
-                out.write("\r\n".getBytes());
-            }
-
-            out.write(("--" + boundary + "--\r\n").getBytes("UTF-8"));
-        }
-        out.flush();
-    }
-
-    public void submit(int studentId, String ocrImage) {
-        System.out.println("studentId = " + studentId);
-        System.out.println("ocrImage = " + ocrImage);
-    }
 
 }
