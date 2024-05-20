@@ -1,9 +1,6 @@
 package com.hangeulbada.domain.workbookset.controller;
 
-import com.hangeulbada.domain.workbookset.dto.ExceptionResponse;
-import com.hangeulbada.domain.workbookset.dto.QuestionDto;
-import com.hangeulbada.domain.workbookset.dto.QuestionRequestDto;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
+import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,11 +45,11 @@ public class QuestionController {
 
     @PostMapping("/workbook/{workbookId}/questions/new")
     @Operation(summary = "문제 생성", description = "세트 내에 문제를 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "생성 성공")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<WorkbookDto> getQuestionsToCreate(@PathVariable(name = "workbookId") String workbookId,
-                                                            @Valid @RequestBody List<QuestionRequestDto> questions,
+                                                            @Valid @RequestBody QuestionRequestListDto questions,
                                                             Principal principal){
         return new ResponseEntity<>(questionService.getQuestionsToCreate(principal.getName(), workbookId, questions), HttpStatus.CREATED);
     }
@@ -78,11 +75,11 @@ public class QuestionController {
 
     @PostMapping("/workbook/{workbookId}/questions/existing")
     @Operation(summary = "기존 문제로 세트 구성", description = "이미 작성되어 있던 문제들을 세트에 추가합니다.")
-    @ApiResponse(responseCode = "200", description = "생성 성공")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<String> getAlreadyExistingQuestionToAdd(@PathVariable(name="workbookId")String workbookId,
-                                                                  @Valid @RequestBody List<QuestionRequestDto> questionIds,
+                                                                  @Valid @RequestBody QuestionRequestListDto questionIds,
                                                                        Principal principal){
         questionService.getAlreadyExistingQuestionToAdd(principal.getName(), workbookId, questionIds);
         return new ResponseEntity<>("문제가 성공적으로 추가되었습니다.", HttpStatus.CREATED);
@@ -90,7 +87,7 @@ public class QuestionController {
 
     @PostMapping("/workbook/{workbookId}/questions")
     @Operation(summary = "새 문제를 기존 세트에 추가", description = "기존 세트 내에 문제를 추가합니다 (한 문장 추가).")
-    @ApiResponse(responseCode = "200", description = "생성 성공")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
@@ -101,7 +98,7 @@ public class QuestionController {
 
     @PostMapping("/workbook/{workbookId}/questions/{questionId}")
     @Operation(summary = "기존 문제 기존 세트에 추가", description = "이미 작성되어 있던 문제를 세트에 추가합니다.(한 문제 추가)")
-    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @ApiResponse(responseCode = "201", description = "조회 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<String> addAlreadyExistingQuestionToWorkbook(@PathVariable(name="workbookId")String workbookId,

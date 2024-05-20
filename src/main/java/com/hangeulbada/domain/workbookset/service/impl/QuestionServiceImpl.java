@@ -2,6 +2,7 @@ package com.hangeulbada.domain.workbookset.service.impl;
 
 import com.hangeulbada.domain.workbookset.dto.QuestionDto;
 import com.hangeulbada.domain.workbookset.dto.QuestionRequestDto;
+import com.hangeulbada.domain.workbookset.dto.QuestionRequestListDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
@@ -89,12 +90,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionRequestDto> questions) {
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, QuestionRequestListDto questions) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
-        for(QuestionRequestDto q : questions){
-            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).build();
+        for(String q : questions.getContent()){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
         }
@@ -104,12 +105,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, List<QuestionRequestDto> questionIds) {
+    public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, QuestionRequestListDto questionIds) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> qIds = new ArrayList<>();
-        for(QuestionRequestDto q : questionIds){
-            String qId = q.getContent();
+        for(String qId : questionIds.getContent()){
             Optional<Question> question = questionRepository.findById(qId);
             if (!question.isEmpty()) qIds.add(qId);
         }

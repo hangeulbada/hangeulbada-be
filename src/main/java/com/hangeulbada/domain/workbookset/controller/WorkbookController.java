@@ -29,7 +29,7 @@ public class WorkbookController {
 
     @PostMapping
     @Operation(summary = "세트 생성", description = "세트를 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "생성 성공")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
     public ResponseEntity<WorkbookDto> createWorkbook(@Valid @RequestBody WorkbookRequestDTO workbookDto, Principal principal){
         log.info("workbookDto: {}", workbookDto);
         return new ResponseEntity<>(workbookService.createWorkbook(principal.getName(), workbookDto), HttpStatus.CREATED);
