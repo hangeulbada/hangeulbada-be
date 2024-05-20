@@ -20,4 +20,8 @@ clova:
     secretkey: cFFibVZNcU1wUEdOeFNjc29QbFl2SFVzalhXTHp4b1Q=
     api:
       url: https://3xezmpp2d0.apigw.ntruss.com/custom/v1/29655/093daa40dbccc5fefb7b694abce25dcf7b21684331c8bd851807c0b85885fee2/general
-
+cloud:
+  aws:
+    s3:
+      bucket:
+        url: https://bada-static-bucket.s3.ap-northeast-2.amazonaws.com/

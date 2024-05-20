@@ -1,8 +1,5 @@
 package com.hangeulbada.domain.ocr.service;
 
-import com.hangeulbada.domain.assignment.dto.ScoreDTO;
-import com.hangeulbada.domain.assignment.service.AssignmentService;
-import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -24,24 +21,12 @@ import java.util.*;
 public class OCRService {
     @Value("${clova.ocr.secretkey}") String secretKey;
     @Value("${clova.ocr.api.url}") String apiURL;
+    @Value("${cloud.aws.s3.bucket.url}") String s3Url;
 
-    private final AssignmentService assignmentService;
-
-
-    public List<ScoreDTO> startOcr(OCRRequest ocrRequest){
-        List<String> ocrText = start(ocrRequest.getImageName());
-        // principal로 대체 필요
-        String studentId = "2342304";
-        String workbookId = "1";
-        return assignmentService.getScores(studentId, workbookId, ocrText);
-
-    }
-
-    public List<String> start(String fileName) {
-
+    public List<String> startOCR(String fileName) {
         try {
-            String format = "png";
-            String S3Url = "https://bada-static-bucket.s3.ap-northeast-2.amazonaws.com/" +fileName+"."+format;
+            String format = fileName.split("\\.")[1];
+            String S3Url = s3Url +fileName;
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/json");
@@ -80,11 +65,11 @@ public class OCRService {
         return null;
     }
 
+    // ocr data에서 infertext만 파싱
     public List<String> getInferText(String str) {
         List<String> inferTextList = new ArrayList<>();
 
         JSONObject json = new JSONObject(str);
-        log.info("json = " + json.toString());
         JSONArray images = json.getJSONArray("images");
         JSONArray fields = images.getJSONObject(0).getJSONArray("fields");
 
@@ -99,6 +84,7 @@ public class OCRService {
         return getPrettyInfer(inferTextList);
     }
 
+    // 추출된 문자열 보정
     public List<String> getPrettyInfer(List<String> inferTextList) {
         String concat = inferTextList.toString().replace("[", "").replace("]", "").replace(",", "").replace(".", "");
 

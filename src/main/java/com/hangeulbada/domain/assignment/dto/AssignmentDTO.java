@@ -1,20 +1,18 @@
-package com.hangeulbada.domain.assignment.entity;
+package com.hangeulbada.domain.assignment.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nonapi.io.github.classgraph.json.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
-@Document(collection = "Assignment")
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class Assignment {
-    @Id
+@AllArgsConstructor
+public class AssignmentDTO {
     private String id;
     private String studentId;
     private String workbookId;

@@ -1,9 +1,11 @@
 package com.hangeulbada.domain.assignment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 @Schema(description = "문항별 점수")
 public class ScoreDTO {
     @Schema(description = "문항 번호", example = "1")
