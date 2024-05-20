@@ -17,8 +17,8 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // 14일
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // 14일
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 45L;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 45L;
 
     private final Key key;
     long now = (new Date()).getTime();
@@ -26,12 +26,12 @@ public class JwtTokenProvider {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-    public String accessTokenGenerate(String subject) {
+    public String accessTokenGenerate(String id) {
         Date expiredAt = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-        Claims claims = Jwts.claims().setSubject(subject);
+        Claims claims = Jwts.claims().setSubject(id);
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)    //uid
+                .setSubject(id)    //id
                 .setExpiration(expiredAt)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();

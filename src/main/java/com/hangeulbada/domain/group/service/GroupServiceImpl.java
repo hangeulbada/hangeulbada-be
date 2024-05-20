@@ -1,6 +1,5 @@
 package com.hangeulbada.domain.group.service;
 
-import com.hangeulbada.domain.assignment.service.AssignmentService;
 import com.hangeulbada.domain.group.dto.GroupDTO;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.entity.Group;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -21,8 +21,25 @@ import java.util.stream.Collectors;
 public class GroupServiceImpl implements GroupService{
     private final GroupRepository groupRepository;
     private final ModelMapper mapper;
-    private final AssignmentService assignmentService;
+//    private final AssignmentService assignmentService;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+
+    @Override
+    public boolean isValidRequest(String id, String groupId){
+        log.info("id: "+id+" groupId: "+groupId);
+        try{
+            Optional<Group> group = groupRepository.findById(groupId);
+            if (group.isEmpty()){
+                return false;
+            }
+
+            log.info("group: "+group.get().getTeacherId());
+            return group.get().getTeacherId().equals(id);
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
 
     private String generateGroupCode(){
         StringBuilder codeBuilder = new StringBuilder();

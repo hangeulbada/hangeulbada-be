@@ -1,14 +1,13 @@
-package com.hangeulbada.domain.assignment.controller;
+package com.hangeulbada.domain.ocr.controller;
 
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
-import com.hangeulbada.domain.assignment.dto.ScoreDTO;
+import com.hangeulbada.domain.ocr.dto.ScoreDTO;
 import com.hangeulbada.domain.ocr.service.OCRService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/assignment")
+@RequestMapping("/api/ocr")
 @RequiredArgsConstructor
-@Tag(name = "Assignment API", description = "학생이 제출한 답안을 채점하고, 조회하는 API입니다.")
-public class AssignmentController {
+public class OCRController {
     private final OCRService ocrService;
 
     @PostMapping("/submit")
@@ -31,7 +29,14 @@ public class AssignmentController {
     public ResponseEntity<List<ScoreDTO>> submit(
             @RequestBody @Parameter(description = "OCR 요청 데이터", required = true, content = @Content(schema = @Schema(implementation = OCRRequest.class)))
             OCRRequest ocrRequest) {
-        List<ScoreDTO> scoreDTOList = ocrService.startOcr(ocrRequest);
-        return ResponseEntity.ok(scoreDTOList);
+        String image = ocrRequest.getOcrImage();
+        System.out.println(image);
+        ocrService.start();
+//        String s3Url = ocrRequest.getOcrImage();
+
+        List<ScoreDTO> scoreList = null;
+
+        return ResponseEntity.ok(scoreList);
     }
+
 }

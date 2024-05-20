@@ -7,6 +7,7 @@ import com.hangeulbada.domain.group.service.GroupService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class GroupController {
             @ApiImplicitParam(name = "X-Custom-Header", value = "Description of custom header", required = true, dataType = "string", paramType = "header")
     })
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
+    @ApiResponse(responseCode = "201", description = "클래스 생성 성공")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupRequest request, Principal principal){
         GroupDTO group = groupService.createGroup(principal.getName(), request.getGroupName());
         return ResponseEntity.ok(group);
@@ -38,6 +40,8 @@ public class GroupController {
 
     @GetMapping("/group")
     @Operation(summary = "모든 클래스 조회", description = "모든 클래스를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
+    @ApiResponse(responseCode = "403", description = "클래스 조회 권한 없음")
     public ResponseEntity<?> getAllGroup(Principal principal){
         //user의 id를 받아서 그룹을 조회
         if (principal == null){
@@ -53,7 +57,13 @@ public class GroupController {
 
     @GetMapping("/group/{groupId}")
     @Operation(summary = "특정 클래스 조회", description = "특정 클래스를 조회합니다.")
-    public ResponseEntity<GroupDTO> getGroup(@PathVariable String groupId){
+    @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
+    @ApiResponse(responseCode = "403", description = "클래스 조회 권한 없음")
+    public ResponseEntity<GroupDTO> getGroup(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        log.info("valid users group request");
         GroupDTO groupList = groupService.getGroup(groupId);
         return ResponseEntity.ok(groupList);
     }
@@ -61,13 +71,23 @@ public class GroupController {
     @DeleteMapping("/group/{groupId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "클래스 삭제", description = "클래스를 삭제합니다.")
-    public void deleteGroup(@PathVariable String groupId){
+    @ApiResponse(responseCode = "204", description = "클래스 삭제 성공")
+    @ApiResponse(responseCode = "403", description = "클래스 삭제 권한 없음")
+    public void deleteGroup(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            log.warn("invalid user's delete request");
+        }
         groupService.deleteGroup(groupId);
     }
 
     @GetMapping("/group/{groupId}/submit")
     @Operation(summary = "클래스의 학생들이 푼 문제집", description = "클래스의 학생들이 푼 문제집을 조회합니다.")
-    public ResponseEntity<List<SubmitDTO>> getSubmit(@PathVariable String groupId){
+    @ApiResponse(responseCode = "200", description = "클래스의 학생들이 푼 문제집 조회 성공")
+    @ApiResponse(responseCode = "403", description = "클래스 조회 권한 없음")
+    public ResponseEntity<List<SubmitDTO>> getSubmit(@PathVariable String groupId, Principal principal){
+        if(!groupService.isValidRequest(principal.getName(), groupId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         List<SubmitDTO> submitList = groupService.getRecentSubmit(groupId);
         return ResponseEntity.ok(submitList);
     }
