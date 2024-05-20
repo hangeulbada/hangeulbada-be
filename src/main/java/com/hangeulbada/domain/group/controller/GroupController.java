@@ -4,6 +4,8 @@ import com.hangeulbada.domain.group.dto.GroupDTO;
 import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.service.GroupService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,9 @@ public class GroupController {
 
     @PostMapping("/group")
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-Custom-Header", value = "Description of custom header", required = true, dataType = "string", paramType = "header")
+    })
     @Operation(summary = "클래스 생성", description = "클래스를 생성합니다.")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupRequest request, Principal principal){
         GroupDTO group = groupService.createGroup(principal.getName(), request.getGroupName());
