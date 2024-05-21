@@ -10,4 +10,6 @@ public interface QuestionSerivce {
     QuestionDto createQuestion(String workbookId, QuestionRequestDto questionsDto);
     QuestionDto getQuestionById(String workbookId, String questionId);
     void deleteQuestion(String workbookId, String questionId);
+    QuestionDto saveQuestion(QuestionDto questionDto);
+    void updateQuestion(QuestionDto questionDto);
 }

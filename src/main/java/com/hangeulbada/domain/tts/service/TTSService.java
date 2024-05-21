@@ -11,7 +11,7 @@ import java.util.Date;
 @Service
 public class TTSService {
 
-    public String tts() {
+    public String tts(String questionText) {
         String clientId = "nu7h0ox9o9";//애플리케이션 클라이언트 아이디값";
         String clientSecret = "mMuPX3WMWVRE8YqyO4x627ypW2Nv2ekgsVwMq0uf";//애플리케이션 클라이언트 시크릿값";
         try {
