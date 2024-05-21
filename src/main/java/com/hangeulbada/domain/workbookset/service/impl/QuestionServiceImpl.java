@@ -162,4 +162,31 @@ public class QuestionServiceImpl implements QuestionService {
         workbook.getQuestionIds().add(question.getId());
         workbookRepository.save(workbook);
     }
+    @Override
+    public QuestionDto saveQuestion(QuestionDto questionDto) {
+        Question question = convertToEntity(questionDto);
+        Question savedQuestion = questionRepository.save(question);
+        return convertToDto(savedQuestion);
+    }
+    private Question convertToEntity(QuestionDto questionDto) {
+        return Question.builder()
+                .id(questionDto.getId())
+                .teacherId(questionDto.getTeacherId())
+                .content(questionDto.getContent())
+                .audioFilePath(questionDto.getAudioFilePath())
+                .build();
+    }
+    @Override
+    public void updateQuestion(QuestionDto questionDto) {
+        Question question = convertToEntity(questionDto);
+        questionRepository.save(question);
+    }
+    private QuestionDto convertToDto(Question question) {
+        return QuestionDto.builder()
+                .id(question.getId())
+                .teacherId(question.getTeacherId())
+                .content(question.getContent())
+                .audioFilePath(question.getAudioFilePath())
+                .build();
+    }
 }

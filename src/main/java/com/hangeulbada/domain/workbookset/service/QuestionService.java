@@ -17,5 +17,7 @@ public interface QuestionService {
     QuestionDto getQuestionById(String workbookId, String questionId);
     void deleteQuestionFromWorkbook(String teacherId, String workbookId, String questionId);
     void addAlreadyExistingQuestion(String teacherId, String workbookId, String questionId);
+    QuestionDto saveQuestion(QuestionDto questionDto);
+    void updateQuestion(QuestionDto questionDto);
 }
 
