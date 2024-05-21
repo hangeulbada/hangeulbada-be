@@ -34,7 +34,6 @@ public class TTSController {
         if(StringUtils.isEmpty(audioFilePath)) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        // 파일 경로가 존재하면 해당 파일을 QuestionDto에 설정하여 반환
         questionDto.setAudioFilePath(audioFilePath);
         return new ResponseEntity<>(questionDto, HttpStatus.OK);
     }

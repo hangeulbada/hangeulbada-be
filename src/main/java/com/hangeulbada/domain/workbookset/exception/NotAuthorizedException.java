@@ -3,14 +3,12 @@ package com.hangeulbada.domain.workbookset.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value= HttpStatus.BAD_REQUEST)
-public class WorkbookException extends RuntimeException{
-    private HttpStatus status;
+@ResponseStatus(value= HttpStatus.UNAUTHORIZED)
+public class NotAuthorizedException extends RuntimeException{
     private String message;
 
-    public WorkbookException(HttpStatus status, String message) {
+    public NotAuthorizedException(String message) {
         super(message);
-        this.status = status;
         this.message = message;
     }
 }

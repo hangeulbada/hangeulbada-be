@@ -10,15 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.function.Function;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,15 +26,16 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("JWTAuthFilter");
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
+            String token = authHeader.substring(7);
 
-            if (isValidAccessToken(jwt)) {
-                setAuthenticationContext(jwt, request);
-                filterChain.doFilter(request, response);
+            if (isValidAccessToken(token)) {
+                log.info("Valid Access Token");
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                log.info("auth" + auth);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
             else{
                 log.info("Token is not valid: Access token has expired");
@@ -58,18 +55,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void setAuthenticationContext(String token, HttpServletRequest request) {
-        String username = extractClaim(token, Claims::getSubject);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                username, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
@@ -77,11 +62,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     private boolean isValidAccessToken(String token) {
         try {
-            log.info("Token validation");
-            log.info("Token: " + token);
             return !extractAllClaims(token).getExpiration().before(new java.util.Date());
         } catch (Exception e) {
-            log.info("Token validation error: " + e.getMessage());
             return false;
         }
     }

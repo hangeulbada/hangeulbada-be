@@ -1,23 +1,60 @@
 package com.hangeulbada.global.config;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@EnableSwagger2
+import java.util.Arrays;
+
+@OpenAPIDefinition(
+        info = @Info(title = "한글바다 API 명세서",
+                version = "v1"))
+@Configuration
 public class SwaggerConfig {
+
+//    @Bean
+//    public Docket api() {
+//        return new Docket(DocumentationType.OAS_30)
+//                .select()
+//                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
+//                .paths(PathSelectors.any())
+//                .build()
+//                .securityContexts(List.of(securityContext()))
+//                .securitySchemes(List.of(bearerAuthSecurityScheme()));
+//    }
+//
+//    private SecurityContext securityContext(){
+//        return SecurityContext.builder()
+//                .securityReferences(defaultAuth())
+//                .build();
+//    }
+//
+//    private List<SecurityReference> defaultAuth(){
+//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+//        authorizationScopes[0] = authorizationScope;
+//        return Arrays.asList(new SecurityReference("Authorization", authorizationScopes));
+//    }
+//
+//    // 버튼 클릭 시 입력 값 설정
+//    private ApiKey apiKey(){
+//        return new ApiKey("Authorization", "Bearer", "header");
+//    }
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.OAS_30)
-                .useDefaultResponseMessages(true) // Swagger 에서 제공해주는 기본 응답 코드를 표시할 것이면 true
-//                .apiInfo(apiInfo())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("hangeul.bada.domain")) // Controller가 들어있는 패키지. 이 경로의 하위에 있는 api만 표시됨.
-                .paths(PathSelectors.any()) // 위 패키지 안의 api 중 지정된 path만 보여줌. (any()로 설정 시 모든 api가 보여짐)
-                .build();
+    public OpenAPI openAPI(){
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER).name("Authorization");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
+                .security(Arrays.asList(securityRequirement));
     }
 
 }

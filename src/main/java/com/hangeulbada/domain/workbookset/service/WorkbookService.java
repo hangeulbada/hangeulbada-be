@@ -6,9 +6,8 @@ import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
 import java.util.List;
 
 public interface WorkbookService {
-    WorkbookDto createWorkbook(WorkbookRequestDTO workbookDto);
-    List<WorkbookDto> getWorkbookList(); // 추후 pagination 추가
+    WorkbookDto createWorkbook(String teacherId, WorkbookRequestDTO workbookDto);
+    List<WorkbookDto> getWorkbookList(String teacherId); // 추후 pagination 추가
     WorkbookDto getWorkbookById(String workbookId);
-    void deleteWorkbook(String workbookId);
-
+    void deleteWorkbook(String teacherId, String workbookId);
 }
