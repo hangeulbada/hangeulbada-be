@@ -82,5 +82,9 @@ public class AuthController {
         userService.deleteUser(principal.getName());
     }
 
-
+    @Operation(summary = "main", description = "main")
+    @GetMapping("/")
+    public String mainPage(){
+        return "main";
+    }
 }
