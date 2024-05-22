@@ -39,8 +39,7 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000")); // ⭐️ 허용할 origin
-            config.setAllowedOriginPatterns(Collections.singletonList("https://hangulbada.web.app")); // ⭐️ 허용할 origin
-
+            config.addAllowedOriginPattern("https://hangulbada.web.app"); // 허용할 origin 추가
             config.setAllowCredentials(true);
             return config;
         };
@@ -57,7 +56,10 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                         .anyRequest().permitAll())
-                .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTAuthFilter(secretKey, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers
+                        .addHeaderWriter((request, response) -> response.setHeader("Cross-Origin-Opener-Policy", "same-origin"))
+                );
         return http.build();
     }
 }
