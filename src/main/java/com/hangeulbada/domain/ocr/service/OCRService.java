@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class OCRService {
     public List<String> startOCR(String fileName) {
         try {
             String format = fileName.split("\\.")[1];
-            String S3Url = s3Url +fileName;
+            String S3Url = s3Url + fileName;
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/json");
@@ -57,31 +56,39 @@ public class OCRService {
                     String.class
             );
             String result = response.getBody();
+            List<String> rr = getInferText(result);
+            System.out.println(rr);
 
-            return getInferText(result);
+            return rr;
         } catch (Exception e) {
-            System.out.println("e1" + e);
+            log.error("Error during OCR process: ", e);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     // ocr data에서 infertext만 파싱
     public List<String> getInferText(String str) {
         List<String> inferTextList = new ArrayList<>();
 
-        JSONObject json = new JSONObject(str);
-        JSONArray images = json.getJSONArray("images");
-        JSONArray fields = images.getJSONObject(0).getJSONArray("fields");
+        try {
+            JSONObject json = new JSONObject(str);
+            JSONArray images = json.getJSONArray("images");
+            JSONArray fields = images.getJSONObject(0).getJSONArray("fields");
 
-        for (int i = 0; i < fields.length(); i++) {
-            JSONObject field = fields.getJSONObject(i);
-            String inferText = field.getString("inferText");
-            inferTextList.add(inferText);
+            for (int i = 0; i < fields.length(); i++) {
+                JSONObject field = fields.getJSONObject(i);
+                String inferText = field.getString("inferText");
+                inferTextList.add(inferText);
+            }
+
+            log.debug("Extracted infer text: {}", inferTextList);
+
+            return getPrettyInfer(inferTextList);
+        } catch (Exception e) {
+            log.error("Error parsing infer text: ", e);
         }
 
-        System.out.println(inferTextList);
-
-        return getPrettyInfer(inferTextList);
+        return Collections.emptyList();
     }
 
     // 추출된 문자열 보정
@@ -91,51 +98,49 @@ public class OCRService {
         char[] chars = concat.toCharArray();
         List<String> resultList = new ArrayList<>();
         StringBuilder currentString = new StringBuilder();
-        int startNum=0;
-        for (int i=0;i<chars.length;i++) {
-            if (Character.isDigit(chars[i])) {
-                if (!currentString.isEmpty()) {
-                    resultList.add(currentString.toString());
-                    currentString = new StringBuilder();
-                }
+        int startNum = 0;
 
-                while (Character.isDigit(chars[i])){
+        try {
+            for (int i = 0; i < chars.length; i++) {
+                if (Character.isDigit(chars[i])) {
+                    if (currentString.length() > 0) {
+                        resultList.add(currentString.toString());
+                        currentString = new StringBuilder();
+                    }
+
+                    while (i < chars.length && Character.isDigit(chars[i])) {
+                        currentString.append(chars[i]);
+                        if (startNum + 1 == Integer.parseInt(currentString.toString())) {
+                            break;
+                        }
+                        if (i + 1 < chars.length && Character.isDigit(chars[i + 1])) {
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (startNum == 0) {
+                        startNum = Integer.parseInt(currentString.toString());
+                    }
+
+                } else {
+                    if (currentString.length() > 0 && Character.isDigit(currentString.charAt(currentString.length() - 1))) {
+                        currentString.append(".");
+                    }
                     currentString.append(chars[i]);
-                    if (startNum+1==Integer.parseInt(currentString.toString())){
-                        break;
-                    }
-                    if (Character.isDigit(chars[i+1])) {
-                        i++;
-                    }
-                    else{
-                        break;
-                    }
                 }
-                if (startNum==0){
-                    startNum = Integer.parseInt(currentString.toString());
-                }
-
-            } else{
-                if (!currentString.isEmpty() && Character.isDigit(currentString.charAt(currentString.length() - 1))) {
-                    currentString.append(".");
-                }
-                currentString.append(chars[i]);
             }
-        }
 
-        if (!currentString.isEmpty()) {
-            resultList.add(currentString.toString());
-        }
+            if (currentString.length() > 0) {
+                resultList.add(currentString.toString());
+            }
 
-        // 결과 출력
-        for (String result : resultList) {
-            System.out.println(result);
+            log.debug("Formatted result: {}", resultList);
+
+        } catch (Exception e) {
+            log.error("Error formatting infer text: ", e);
         }
 
         return resultList;
     }
-
-
-
-
 }
