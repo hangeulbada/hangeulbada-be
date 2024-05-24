@@ -18,4 +18,5 @@ public class Group{
     private String teacherId;
     private String groupCode;
     private List<String> studentIds;
+    private List<String> workbookIds;
 }
