@@ -4,6 +4,7 @@ import com.hangeulbada.domain.annotation.GroupTag;
 import com.hangeulbada.domain.annotation.StudentTag;
 import com.hangeulbada.domain.group.dto.*;
 import com.hangeulbada.domain.group.service.GroupService;
+import com.hangeulbada.domain.user.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class GroupController {
     private final GroupService groupService;
+    private final UserService userService;
 
     @GroupTag
     @PostMapping("/group")
@@ -124,5 +126,14 @@ public class GroupController {
     public ResponseEntity<?> getAttendGroup(Principal principal){
         List<GroupAttendResponse> group = groupService.getAttendGroup(principal.getName());
         return ResponseEntity.ok(group);
+    }
+
+    @StudentTag
+    @GetMapping("/student/group/{groupId}/assignment")
+    @Operation(summary = "학생이 클래스에서 푼 문제집", description = "학생이 클래스에서 푼 문제집을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
+    public ResponseEntity<?> getAssignment(@PathVariable String groupId, Principal principal){
+        List<GroupAssignmentDTO> assignment = userService.getGroupAssignment(groupId, principal.getName());
+        return ResponseEntity.ok(assignment);
     }
 }
