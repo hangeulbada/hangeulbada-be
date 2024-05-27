@@ -1,9 +1,10 @@
 package com.hangeulbada.domain.workbookset.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
+import com.hangeulbada.domain.workbookset.dto.ExceptionResponse;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
-import com.hangeulbada.domain.workbookset.dto.ExceptionResponse;
+import com.hangeulbada.domain.workbookset.dto.WorkbooksDTO;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -77,23 +78,27 @@ public class WorkbookController {
         return new ResponseEntity<>(workbookService.createGroupWorkbook(principal.getName(), groupId, workbookDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/group/{groupId}/workbook/{workbookId}")
+    @PostMapping("/group/{groupId}/workbooks")
     @Operation(summary = "클래스 문제집 추가", description = "클래스에 기존 문제집을 추가합니다.")
     @ApiResponse(responseCode = "200", description = "추가 성공")
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
-    public ResponseEntity<String> addGroupWorkbook(@PathVariable(name="groupId") String groupId, @PathVariable(name="workbookId") String workbookId, Principal principal){
-        workbookService.addGroupWorkbook(principal.getName(), groupId, workbookId);
+    public ResponseEntity<String> addGroupWorkbook(@PathVariable(name="groupId") String groupId, @RequestBody WorkbooksDTO workbookIds, Principal principal){
+        for (String workbookId : workbookIds.getWorkbookIds()){
+            workbookService.addGroupWorkbook(principal.getName(), groupId, workbookId);
+        }
         return new ResponseEntity<>("정상적으로 세트가 추가되었습니다.",HttpStatus.OK);
     }
 
-    @DeleteMapping("/group/{groupId}/workbook/{workbookId}")
-    @Operation(summary = "클래스 문제집 삭제.", description = "클래스에 문제집을 삭제합니다.")
+    @DeleteMapping("/group/{groupId}/workbooks")
+    @Operation(summary = "클래스 문제집 삭제", description = "클래스에 문제집을 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "삭제 성공")
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
-    public ResponseEntity<String> deleteGroupWorkbook(@PathVariable(name="groupId") String groupId, @PathVariable(name="workbookId") String workbookId, Principal principal){
-        workbookService.deleteGroupWorkbook(principal.getName(), groupId, workbookId);
+    public ResponseEntity<String> deleteGroupWorkbook(@PathVariable(name="groupId") String groupId, @RequestBody WorkbooksDTO workbookIds, Principal principal){
+        for (String workbookId : workbookIds.getWorkbookIds()){
+            workbookService.deleteGroupWorkbook(principal.getName(), groupId, workbookId);
+        }
         return new ResponseEntity<>("정상적으로 세트가 삭제되었습니다.",HttpStatus.OK);
     }
 
