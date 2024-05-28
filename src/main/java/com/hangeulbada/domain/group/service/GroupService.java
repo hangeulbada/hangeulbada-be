@@ -1,21 +1,24 @@
 package com.hangeulbada.domain.group.service;
 
+import com.hangeulbada.domain.assignment.entity.Assignment;
+import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
+import com.hangeulbada.domain.auth.entity.User;
+import com.hangeulbada.domain.auth.repository.UserRepository;
 import com.hangeulbada.domain.group.dto.GroupAttendResponse;
 import com.hangeulbada.domain.group.dto.GroupDTO;
 import com.hangeulbada.domain.group.dto.GroupRequest;
 import com.hangeulbada.domain.group.dto.SubmitDTO;
 import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
+import com.hangeulbada.domain.workbookset.entity.Workbook;
+import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,18 +28,17 @@ public class GroupService{
     private final GroupRepository groupRepository;
     private final ModelMapper mapper;
 //    private final AssignmentService assignmentService;
+    private final AssignmentRepository assignmentRepository;
+    private final WorkbookRepository workbookRepository;
+    private final UserRepository userRepository;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
 
     public boolean isValidRequest(String id, String groupId){
         log.info("id: "+id+" groupId: "+groupId);
         try{
             Optional<Group> group = groupRepository.findById(groupId);
-            if (group.isEmpty()){
-                return false;
-            }
+            return group.map(value -> value.getTeacherId().equals(id)).orElse(false);
 
-            log.info("group: "+group.get().getTeacherId());
-            return group.get().getTeacherId().equals(id);
         }
         catch (Exception e){
             return false;
@@ -77,7 +79,6 @@ public class GroupService{
     public GroupAttendResponse attendGroup(String code, String studentId) {
         log.info("code: "+code+" studentId: "+studentId);
         Optional<Group> tmpGroup = groupRepository.findByGroupCode(code);
-        log.info("group: "+tmpGroup);
         if(tmpGroup.isPresent()){
             Group group = tmpGroup.get();
             if(group.getStudentIds() == null){
@@ -109,8 +110,6 @@ public class GroupService{
         return groups.stream()
                 .map(group -> mapper.map(group, GroupAttendResponse.class))
                 .collect(Collectors.toList());
-
-
     }
 
     @Transactional
@@ -128,9 +127,29 @@ public class GroupService{
     }
 
     public List<SubmitDTO> getRecentSubmit(String groupId){
-        return groupRepository.getRecentSubmit(groupId);
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if (optionalGroup.isEmpty()) {
+            throw new NoSuchElementException("No group found with the ID: " + groupId);
+        }
+        Group group = optionalGroup.get();
+        List<Assignment> assignments = assignmentRepository.findByStudentIdIn(group.getStudentIds());
+
+        assignments.sort(Comparator.comparing(Assignment::getSubmitDate));
+
+        return assignments.stream().map(assignment -> {
+            Optional<Workbook> optionalWorkbook = workbookRepository.findById(assignment.getWorkbookId());
+            if (optionalWorkbook.isEmpty()) {
+                throw new NoSuchElementException("No workbook found with the ID: " + assignment.getWorkbookId());
+            }
+            Workbook workbook = optionalWorkbook.get();
+
+            Optional<User> optionalUser = userRepository.findById(assignment.getStudentId());
+            if (optionalUser.isEmpty()) {
+                throw new NoSuchElementException("No user found with the student ID: " + assignment.getStudentId());
+            }
+            User user = optionalUser.get();
+
+            return new SubmitDTO(user.getName(), assignment.getId(), assignment.getScore(), workbook.getId(), workbook.getTitle(), assignment.getSubmitDate().toString().split("T")[0]);
+        }).collect(Collectors.toList());
     }
-
-
-
 }

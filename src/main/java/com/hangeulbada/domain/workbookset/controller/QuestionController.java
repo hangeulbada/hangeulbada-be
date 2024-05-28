@@ -35,6 +35,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "200", description = "삭제 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<String> deleteQuestion(@PathVariable(name="questionId")String questionId,
                                                  Principal principal){
         questionService.deleteQuestion(principal.getName(),questionId);
@@ -48,6 +49,8 @@ public class QuestionController {
     @ApiResponse(responseCode = "201", description = "생성 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<WorkbookDto> getQuestionsToCreate(@PathVariable(name = "workbookId") String workbookId,
                                                             @Valid @RequestBody QuestionRequestListDto questions,
                                                             Principal principal){
@@ -90,6 +93,8 @@ public class QuestionController {
     @ApiResponse(responseCode = "201", description = "생성 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
                                                       @Valid @RequestBody QuestionRequestDto questionDto,
                                                       Principal principal){
@@ -118,6 +123,15 @@ public class QuestionController {
                                                  Principal principal){
         questionService.deleteQuestionFromWorkbook(principal.getName(), workbookId,questionId);
         return new ResponseEntity<>("세트에서 문제를 제거하였습니다.", HttpStatus.OK);
+    }
+
+    @GetMapping("/questions/{questionId}/audio")
+    @Operation(summary = "문제 음성 파일 경로 조회", description = "해당 문제의 음성 파일 경로를 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    public ResponseEntity<QuestionAudioPathDto> getAudioFilePath(@PathVariable(name="questionId") String questionId){
+        return ResponseEntity.ok(questionService.getQuestionAudioPath(questionId));
     }
 
 }

@@ -1,9 +1,7 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
-import com.hangeulbada.domain.workbookset.dto.QuestionDto;
-import com.hangeulbada.domain.workbookset.dto.QuestionRequestDto;
-import com.hangeulbada.domain.workbookset.dto.QuestionRequestListDto;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
+import com.hangeulbada.domain.tts.service.TTSService;
+import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
@@ -30,7 +28,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final WorkbookRepository workbookRepository;
     private final ModelMapper mapper;
-    private final ModelMapper modelMapper;
+    private final TTSService ttsService;
 
     @Override
     public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
@@ -61,6 +59,7 @@ public class QuestionServiceImpl implements QuestionService {
                 deleteQuestionFromWorkbook(w.getTeacherId(), w.getId(), questionId);
             }
         }
+        ttsService.deleteFileFromS3(question.getAudioFilePath());
         questionRepository.deleteById(questionId);
     }
 
@@ -74,10 +73,12 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionDto createQuestion(String teacherId, String workbookId, QuestionRequestDto questionRequestDto) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
+        String audioFilePath = ttsService.tts(questionRequestDto.getContent());
 
         QuestionDto questionDto = QuestionDto.builder()
                 .content(questionRequestDto.getContent())
                 .teacherId(teacherId)
+                .audioFilePath(audioFilePath)
                 .build();
         Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
 
@@ -95,7 +96,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
         for(String q : questions.getContent()){
-            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).build();
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).audioFilePath(ttsService.tts(q)).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
         }
@@ -161,5 +162,14 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotAuthorizedException("작성자만 수정할 수 있습니다.");
         workbook.getQuestionIds().add(question.getId());
         workbookRepository.save(workbook);
+    }
+
+    @Override
+    public QuestionAudioPathDto getQuestionAudioPath(String questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(()-> new ResourceNotFoundException("Question","id", questionId));
+        Optional<String> audioPath = Optional.ofNullable(question.getAudioFilePath());
+        if(audioPath.isEmpty()) throw new ResourceNotFoundException("Question", "audioFilePath", questionId);
+        return new QuestionAudioPathDto(audioPath.get());
     }
 }

@@ -29,4 +29,14 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<Object> handleWorkbookException(WorkbookException ex) {
         return new ResponseEntity(new ExceptionResponse(new Date(),ex.getStatus(), ex.getMessage()), ex.getStatus());
     }
+
+    @ExceptionHandler(value = { S3Exception.class})
+    public ResponseEntity<Object> handleS3UploadException(S3Exception ex){
+        return new ResponseEntity<>(new ExceptionResponse(new Date(),ex.getStatus(), ex.getMessage()), ex.getStatus());
+    }
+
+    @ExceptionHandler(value = { TtsException.class})
+    public ResponseEntity<Object> handleTtsException(TtsException ex){
+        return new ResponseEntity<>(new ExceptionResponse(new Date(),ex.getStatus(), ex.getMessage()), ex.getStatus());
+    }
 }
