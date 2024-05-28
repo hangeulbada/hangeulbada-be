@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,7 @@ public class AssignmentService {
                 .workbookId(workbookId)
                 .content(content)
                 .score(String.valueOf(totalScore))
+                .submitDate(LocalDateTime.now())
                 .build();
 
         assignmentRepository.save(mapper.map(assignmentDTO, Assignment.class));

@@ -16,4 +16,7 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
             "{$project: {workbookId: 1, workbookTitle: '$workbook_info.title', assignmentId: '$_id', score: 1}}"
     })
     List<GroupAssignmentDTO> findGroupAssignmentsByStudentId(String studentId);
+    List<Assignment> findByStudentIdIn(List<String> studentIds);
+
+
 }

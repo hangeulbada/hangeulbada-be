@@ -19,7 +19,6 @@ public class UserService {
         UserRepository.deleteById(id);
     }
     public List<GroupAssignmentDTO> getGroupAssignment(String groupId, String studentId){
-        log.info("groupId: "+groupId+" studentId: "+studentId);
         return assignmentRepository.findGroupAssignmentsByStudentId(studentId);
     }
 }
