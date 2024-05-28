@@ -17,4 +17,5 @@ public class QuestionDto {
     private String id;
     private String teacherId;
     private String content;
+    private String audioFilePath;
 }

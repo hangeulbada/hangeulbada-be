@@ -1,9 +1,6 @@
 package com.hangeulbada.domain.workbookset.service;
 
-import com.hangeulbada.domain.workbookset.dto.QuestionDto;
-import com.hangeulbada.domain.workbookset.dto.QuestionRequestDto;
-import com.hangeulbada.domain.workbookset.dto.QuestionRequestListDto;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
+import com.hangeulbada.domain.workbookset.dto.*;
 
 import java.util.List;
 
@@ -17,5 +14,6 @@ public interface QuestionService {
     QuestionDto getQuestionById(String workbookId, String questionId);
     void deleteQuestionFromWorkbook(String teacherId, String workbookId, String questionId);
     void addAlreadyExistingQuestion(String teacherId, String workbookId, String questionId);
+    QuestionAudioPathDto getQuestionAudioPath(String questionId);
 }
 
