@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.hangeulbada.domain.workbookset.exception.S3UploadException;
+import com.hangeulbada.domain.workbookset.exception.S3Exception;
 import com.hangeulbada.domain.workbookset.exception.TtsException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class TTSService {
                     .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                     .build();
         } catch (Exception e) {
-            throw new S3UploadException("S3 클라이언트 초기화에 실패했습니다.");
+            throw new S3Exception("S3 클라이언트 초기화에 실패했습니다.");
         }
     }
 
@@ -103,7 +103,25 @@ public class TTSService {
             String fileUrl = s3Client.getUrl(bucketName, fileName).toString();
             return fileUrl;
         } catch (Exception e) {
-            throw new S3UploadException("파일 업로드 중 오류 발생");
+            throw new S3Exception("파일 업로드 중 오류 발생");
+        }
+    }
+    public static String extractFileName(String url) {
+        if (url == null || url.isEmpty()) {
+            return null;
+        }
+        int lastSlashIndex = url.lastIndexOf('/');
+        if (lastSlashIndex == -1) {
+            return null;
+        }
+        return url.substring(lastSlashIndex + 1);
+    }
+    public void deleteFileFromS3(String filePath){
+        try{
+            String fileName = extractFileName(filePath);
+            s3Client.deleteObject(bucketName,fileName);
+        }catch(Exception e){
+            throw new S3Exception("음성 파일을 삭제하던 중 에러가 발생했습니다.");
         }
     }
 }

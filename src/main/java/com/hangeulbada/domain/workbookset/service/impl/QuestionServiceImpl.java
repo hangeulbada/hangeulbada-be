@@ -59,6 +59,7 @@ public class QuestionServiceImpl implements QuestionService {
                 deleteQuestionFromWorkbook(w.getTeacherId(), w.getId(), questionId);
             }
         }
+        ttsService.deleteFileFromS3(question.getAudioFilePath());
         questionRepository.deleteById(questionId);
     }
 
