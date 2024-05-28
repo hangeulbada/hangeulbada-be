@@ -10,7 +10,7 @@ on:
       - '**/application*.yml'
       - '**.sql'
   pull_request:
-    branches: [develop]
+    branches: [main, develop]
 
 env:
   S3_BUCKET_NAME: bada-be-deploy2
