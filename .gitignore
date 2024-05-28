@@ -40,3 +40,4 @@ application-oauth.yml
 .vscode/
 
 application.properties
+*.yml
