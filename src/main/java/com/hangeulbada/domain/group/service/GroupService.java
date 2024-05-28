@@ -109,8 +109,6 @@ public class GroupService{
         return groups.stream()
                 .map(group -> mapper.map(group, GroupAttendResponse.class))
                 .collect(Collectors.toList());
-
-
     }
 
     @Transactional
