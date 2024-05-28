@@ -7,8 +7,7 @@ on:
       - '**.java'
       - '**/build.gradle*'
       - '**/settings.gradle*'
-      - '**/application.yml'
-      - '**/application-oauth.yml'
+      - '**/application*.yml'
       - '**.sql'
   pull_request:
     branches: [develop]
