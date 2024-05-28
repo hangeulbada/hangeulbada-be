@@ -3,8 +3,16 @@ name: hangeul-bada api server CI/CD
 on:
   push:
     branches: [main]
+    paths:
+      - '**.java'
+      - '**/build.gradle*'
+      - '**/settings.gradle*'
+      - '**/application.yml'
+      - '**/application-oauth.yml'
+      - '**.sql'
   pull_request:
-    branches: [main]
+    branches: [develop]
+
 env:
   S3_BUCKET_NAME: bada-be-deploy2
 
@@ -20,6 +28,13 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+        
+    - name: Set YML
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
+        echo "${{ secrets.APPLICATION_OAUTH_YML }}" | base64 --decode > src/main/resources/application-oauth.yml
+        find src
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
