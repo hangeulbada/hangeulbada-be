@@ -120,7 +120,6 @@ public class GroupService{
                 .collect(Collectors.toList());
     }
 
-
     @Transactional
     public void deleteGroup(String id){
         groupRepository.deleteById(id);
