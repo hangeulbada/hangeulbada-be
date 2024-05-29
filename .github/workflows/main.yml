@@ -33,9 +33,9 @@ jobs:
         echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
         echo "${{ secrets.APPLICATION_OAUTH_YML }}" | base64 --decode > src/main/resources/application-oauth.yml
         find src
-        
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+#
+#    - name: Grant execute permission for gradlew
+#      run: chmod +x gradlew
     
     - name: Test with Gradle
       run: ./gradlew test
