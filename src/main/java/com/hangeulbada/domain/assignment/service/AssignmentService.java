@@ -68,7 +68,6 @@ public class AssignmentService {
         List<String> questions = questionDtos.stream().map(QuestionDto::getContent).toList();
         List<ScoreDTO> scores = new ArrayList<>();
 
-
         // OCR 결과와 문제를 비교하여 점수를 계산
         for (int i=0;i<questions.size();i++){
             String question = questions.get(i);
