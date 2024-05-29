@@ -86,7 +86,7 @@ public class GroupController {
 
 
     @GroupTag
-    @GetMapping("/group/{groupId}/submit")
+    @GetMapping("/group/{groupId}/recent")
     @Operation(summary = "클래스의 학생들이 푼 문제집", description = "클래스의 학생들이 푼 문제집을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스의 학생들이 푼 문제집 조회 성공")
     @ApiResponse(responseCode = "403", description = "클래스 조회 권한 없음")
