@@ -39,16 +39,25 @@ public class AssignmentService {
     public void saveScores(String studentId, String workbookId, List<ScoreDTO> scores, List<String> ocrText){
         Map<Integer, String> content = new HashMap<>();
         for (String text : ocrText) {
-            String number = text.split("\\.")[0].strip();
-            String contentText = text.split("\\.")[1].strip();
-            content.put(Integer.parseInt(number), contentText);
+            String[] parts = text.split("\\.", 2);
+            if (parts.length == 2) {
+                try {
+                    Integer number = Integer.parseInt(parts[0].trim());
+                    String contentText = parts[1].trim();
+                    content.put(number, contentText);
+                } catch (NumberFormatException e) {
+                    log.error("Error parsing question number: '{}'", parts[0], e);
+                }
+            } else {
+                log.warn("Unexpected OCR text format: '{}'", text);
+            }
         }
         long totalScore = 100;
-        long scoreperQuestion = 100 / scores.size();
+        long scorePerQuestion = !scores.isEmpty() ? 100 / scores.size() : 0;
 
-        for (ScoreDTO score: scores){
-            if (!score.isCorrect()){
-                totalScore-=scoreperQuestion;
+        for (ScoreDTO score : scores) {
+            if (!score.isCorrect()) {
+                totalScore -= scorePerQuestion;
             }
         }
 
@@ -68,17 +77,24 @@ public class AssignmentService {
         List<String> questions = questionDtos.stream().map(QuestionDto::getContent).toList();
         List<ScoreDTO> scores = new ArrayList<>();
 
-
-        // OCR 결과와 문제를 비교하여 점수를 계산
-        for (int i=0;i<questions.size();i++){
-            String question = questions.get(i);
+        for (int i = 0; i < questions.size() && i < ocrText.size(); i++) {
             String text = ocrText.get(i);
-            String number = text.split("\\.")[0].strip();
-            String content = text.split("\\.")[1].strip();
-            scores.add(ScoreDTO.builder()
-                    .number(Integer.parseInt(number))
-                    .isCorrect(question.equals(content))
-                    .build());
+            String[] parts = text.split("\\.", 2);
+            if (parts.length == 2) {
+                try {
+                    int number = Integer.parseInt(parts[0].trim());
+                    String content = parts[1].trim();
+                    boolean isCorrect = questions.get(i).equals(content);
+                    scores.add(ScoreDTO.builder()
+                            .number(number)
+                            .isCorrect(isCorrect)
+                            .build());
+                } catch (NumberFormatException e) {
+                    log.error("Error parsing question number: '{}'", parts[0], e);
+                }
+            } else {
+                log.warn("Unexpected OCR text format: '{}'", text);
+            }
         }
         return scores;
     }

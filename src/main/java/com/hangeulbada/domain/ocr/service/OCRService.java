@@ -103,7 +103,7 @@ public class OCRService {
         try {
             for (int i = 0; i < chars.length; i++) {
                 if (Character.isDigit(chars[i])) {
-                    if (currentString.length() > 0) {
+                    if (!currentString.isEmpty()) {
                         resultList.add(currentString.toString());
                         currentString = new StringBuilder();
                     }
@@ -124,14 +124,14 @@ public class OCRService {
                     }
 
                 } else {
-                    if (currentString.length() > 0 && Character.isDigit(currentString.charAt(currentString.length() - 1))) {
+                    if (!currentString.isEmpty() && Character.isDigit(currentString.charAt(currentString.length() - 1))) {
                         currentString.append(".");
                     }
                     currentString.append(chars[i]);
                 }
             }
 
-            if (currentString.length() > 0) {
+            if (!currentString.isEmpty()) {
                 resultList.add(currentString.toString());
             }
 
