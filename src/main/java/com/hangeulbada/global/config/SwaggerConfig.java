@@ -1,6 +1,7 @@
 package com.hangeulbada.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -11,38 +12,12 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 
-@OpenAPIDefinition(servers = {@Server(url = "https://ssoxong.xyz", description = "한글바다 HTTPS API 서버")})
+@OpenAPIDefinition(info = @Info(title = "한글바다 API 명세서"),
+        servers = {@Server(url = "https://ssoxong.xyz", description = "한글바다 HTTPS API 서버"),
+                    @Server(url = "http://ssoxong.xyz", description = "한글바다 HTTP API 서버"),
+                    @Server(url = "http://ec2-43-201-97-164.ap-northeast-2.compute.amazonaws.com:5943/", description = "한글바다 HTTP API 서버 (EC2)")})
 @Configuration
 public class SwaggerConfig {
-
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.OAS_30)
-//                .select()
-//                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
-//                .paths(PathSelectors.any())
-//                .build()
-//                .securityContexts(List.of(securityContext()))
-//                .securitySchemes(List.of(bearerAuthSecurityScheme()));
-//    }
-//
-//    private SecurityContext securityContext(){
-//        return SecurityContext.builder()
-//                .securityReferences(defaultAuth())
-//                .build();
-//    }
-//
-//    private List<SecurityReference> defaultAuth(){
-//        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-//        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-//        authorizationScopes[0] = authorizationScope;
-//        return Arrays.asList(new SecurityReference("Authorization", authorizationScopes));
-//    }
-//
-//    // 버튼 클릭 시 입력 값 설정
-//    private ApiKey apiKey(){
-//        return new ApiKey("Authorization", "Bearer", "header");
-//    }
     @Bean
     public OpenAPI openAPI(){
         SecurityScheme securityScheme = new SecurityScheme()
@@ -54,5 +29,4 @@ public class SwaggerConfig {
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(Collections.singletonList(securityRequirement));
     }
-
 }
