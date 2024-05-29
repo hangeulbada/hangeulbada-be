@@ -39,7 +39,9 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000")); // ⭐️ 허용할 origin
-            config.addAllowedOriginPattern("https://hangulbada.web.app"); // 허용할 origin 추가
+            config.addAllowedOriginPattern("https://hangulbada.web.app");
+            config.addAllowedOriginPattern("https://ssoxong.xyz");
+            config.addAllowedOriginPattern("http://ec2-43-201-97-164.ap-northeast-2.compute.amazonaws.com:5943");
             config.setAllowCredentials(true);
             return config;
         };
