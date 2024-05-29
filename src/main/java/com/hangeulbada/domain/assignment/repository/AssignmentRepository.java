@@ -17,6 +17,4 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
     })
     List<GroupAssignmentDTO> findGroupAssignmentsByStudentId(String studentId);
     List<Assignment> findByStudentIdIn(List<String> studentIds);
-
-
 }
