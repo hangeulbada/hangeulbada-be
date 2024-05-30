@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/workbook")
 @RequiredArgsConstructor
-@Tag(name = "Workbook Controller", description = "세트 관리 API")
+@Tag(name = "Workbook", description = "문제집 관리 API")
 public class WorkbookController {
     private final WorkbookService workbookService;
 
