@@ -12,10 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 
-@OpenAPIDefinition(info = @Info(title = "한글바다 API 명세서"),
-        servers = {@Server(url = "https://ssoxong.xyz", description = "한글바다 HTTPS API 서버"),
-                    @Server(url = "http://ssoxong.xyz", description = "한글바다 HTTP API 서버"),
-                    @Server(url = "http://ec2-43-201-97-164.ap-northeast-2.compute.amazonaws.com:5943/", description = "한글바다 HTTP API 서버 (EC2)")})
+// 로컬서버 실행시 주석처리
+@OpenAPIDefinition(info = @Info(title = "한글바다 API 명세서"), servers = {@Server(url = "https://ssoxong.xyz", description = "한글바다 HTTPS API 서버")})
 @Configuration
 public class SwaggerConfig {
     @Bean
@@ -29,4 +27,5 @@ public class SwaggerConfig {
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .security(Collections.singletonList(securityRequirement));
     }
+
 }
