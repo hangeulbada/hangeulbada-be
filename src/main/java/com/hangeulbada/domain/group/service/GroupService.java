@@ -148,7 +148,15 @@ public class GroupService{
             }
             User user = optionalUser.get();
 
-            return new SubmitDTO(user.getName(), assignment.getId(), assignment.getScore(), workbook.getId(), workbook.getTitle(), assignment.getSubmitDate().toString().split("T")[0]);
+            return SubmitDTO.builder()
+                    .submitDate(assignment.getSubmitDate().toString().split("T")[0])
+                    .score(assignment.getScore())
+                    .assignmentId(assignment.getId())
+                    .workbookId(workbook.getId())
+                    .workbookTitle(workbook.getTitle())
+                    .name(user.getName())
+                    .build();
+
         }).collect(Collectors.toList());
     }
 }
