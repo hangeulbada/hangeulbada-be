@@ -2,8 +2,12 @@ package com.hangeulbada.domain.assignment.repository;
 
 import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
@@ -17,4 +21,11 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
     })
     List<GroupAssignmentDTO> findGroupAssignmentsByStudentId(String studentId);
     List<Assignment> findByStudentIdIn(List<String> studentIds);
-}
+
+    @Query("{}")
+    List<Assignment> findByStudentIdAndWorkbookIdOrderByCreatedDateDesc(String studentId, String workbookId, Pageable pageable);
+
+    // 편의 메소드로 사용
+    default Assignment findLatestByStudentIdAndWorkbookId(String studentId, String workbookId) {
+        return findByStudentIdAndWorkbookIdOrderByCreatedDateDesc(studentId, workbookId, PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "submitDate"))).stream().findFirst().orElse(null);
+    }}

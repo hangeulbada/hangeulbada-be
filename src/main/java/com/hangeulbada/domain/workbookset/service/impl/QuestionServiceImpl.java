@@ -76,7 +76,7 @@ public class QuestionServiceImpl implements QuestionService {
         String audioFilePath = ttsService.tts(questionRequestDto.getContent());
 
         QuestionDto questionDto = QuestionDto.builder()
-                .content(questionRequestDto.getContent())
+                .content(questionRequestDto.getContent().replace('.', ' ').strip())
                 .teacherId(teacherId)
                 .audioFilePath(audioFilePath)
                 .build();
@@ -112,7 +112,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<String> qIds = new ArrayList<>();
         for(String qId : questionIds.getContent()){
             Optional<Question> question = questionRepository.findById(qId);
-            if (!question.isEmpty()) qIds.add(qId);
+            if (question.isPresent()) qIds.add(qId);
         }
         w.setQuestionIds(qIds);
         workbookRepository.save(w);
