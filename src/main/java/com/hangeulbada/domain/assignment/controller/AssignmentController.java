@@ -2,6 +2,7 @@ package com.hangeulbada.domain.assignment.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
+import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -36,5 +34,17 @@ public class AssignmentController {
     ) {
         List<ScoreDTO> scoreDTOList = assignmentService.requestOCR(ocrRequest, principal.getName());
         return ResponseEntity.ok(scoreDTOList);
+    }
+
+    @StudentTag
+    @GetMapping("/{workbookId}")
+    @Operation(summary="문제집 답안 조회", description="문제집의 학생 답안을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "문제집 답안 조회 성공")
+    public ResponseEntity<SpecificAssignmentDTO> getAssignment(
+            @PathVariable("workbookId") @Parameter(description = "문제집 ID", required = true) String workbookId,
+            Principal principal
+    ) {
+        SpecificAssignmentDTO assignmentDTO = assignmentService.getAssignment(principal.getName(), workbookId);
+        return ResponseEntity.ok(assignmentDTO);
     }
 }
