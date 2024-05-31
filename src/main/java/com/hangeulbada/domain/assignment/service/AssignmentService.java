@@ -81,8 +81,12 @@ public class AssignmentService {
             }
         }
         long totalScore = 100;
-        long scorePerQuestion = !scores.isEmpty() ? 100 / scores.size() : 0;
+        int questionCount = workbookService.getQuestionIdsByWorkbookId(workbookId).size();
+        long scorePerQuestion = !scores.isEmpty() ? 100 / questionCount : 0;
 
+        if (scores.size()!=questionCount){
+            totalScore-=scorePerQuestion*(questionCount-scores.size());
+        }
         for (ScoreDTO score : scores) {
             if (!score.isCorrect()) {
                 totalScore -= scorePerQuestion;
