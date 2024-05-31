@@ -37,14 +37,14 @@ public class AssignmentController {
     }
 
     @StudentTag
-    @GetMapping("/{workbookId}")
+    @GetMapping("/{workbookId}/{studentId}")
     @Operation(summary="문제집 답안 조회", description="문제집의 학생 답안을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "문제집 답안 조회 성공")
     public ResponseEntity<SpecificAssignmentDTO> getAssignment(
             @PathVariable("workbookId") @Parameter(description = "문제집 ID", required = true) String workbookId,
-            Principal principal
+            @PathVariable("studentId") @Parameter(description = "학생 ID", required = true) String studentId
     ) {
-        SpecificAssignmentDTO assignmentDTO = assignmentService.getAssignment(principal.getName(), workbookId);
+        SpecificAssignmentDTO assignmentDTO = assignmentService.getAssignment(studentId, workbookId);
         return ResponseEntity.ok(assignmentDTO);
     }
 }
