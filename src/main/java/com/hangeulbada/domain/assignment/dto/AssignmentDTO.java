@@ -19,4 +19,6 @@ public class AssignmentDTO {
     private Map<Integer, String> content;
     private String score;
     private LocalDateTime submitDate;
+    private String imgS3Url;
+
 }
