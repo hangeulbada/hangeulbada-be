@@ -133,10 +133,8 @@ public class GroupService{
         Group group = optionalGroup.get();
         List<Assignment> assignments = assignmentRepository.findByStudentIdIn(group.getStudentIds());
         List<String> workbookIds = group.getWorkbookIds();
-        log.info("workbookIds: "+workbookIds.size());
 
         assignments.sort(Comparator.comparing(Assignment::getSubmitDate));
-        log.info("assignments: "+assignments.size());
 
         return assignments.stream()
                 .filter(assignment -> workbookIds.contains(assignment.getWorkbookId()))
