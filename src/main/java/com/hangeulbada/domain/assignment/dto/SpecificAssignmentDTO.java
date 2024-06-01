@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecificAssignmentDTO {
+    String studentName;
     String imgS3Url;
     List<SpecificCompareDTO> answers;
     String score;
