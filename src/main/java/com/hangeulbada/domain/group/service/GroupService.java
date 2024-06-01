@@ -132,11 +132,15 @@ public class GroupService{
         }
         Group group = optionalGroup.get();
         List<Assignment> assignments = assignmentRepository.findByStudentIdIn(group.getStudentIds());
+        List<String> workbookIds = group.getWorkbookIds();
+        log.info("workbookIds: "+workbookIds.size());
 
         assignments.sort(Comparator.comparing(Assignment::getSubmitDate));
         log.info("assignments: "+assignments.size());
 
-        return assignments.stream().map(assignment -> {
+        return assignments.stream()
+                .filter(assignment -> workbookIds.contains(assignment.getWorkbookId()))
+                .map(assignment -> {
             Optional<Workbook> optionalWorkbook = workbookRepository.findById(assignment.getWorkbookId());
             if (optionalWorkbook.isEmpty()) {
                 log.warn("No workbook found with the ID: {}", assignment.getWorkbookId());
@@ -148,7 +152,6 @@ public class GroupService{
             if (optionalUser.isEmpty()) {
                 log.warn("No user found with the student ID: {}", assignment.getStudentId());
                 return null;
-
             }
             User user = optionalUser.get();
 
