@@ -8,6 +8,7 @@ import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import com.hangeulbada.domain.ocr.service.OCRService;
+import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.dto.QuestionDto;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
@@ -29,6 +30,7 @@ public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final QuestionService questionService;
     private final WorkbookService workbookService;
+    private final UserService userService;
     private final OCRService ocrService;
     private final ModelMapper mapper;
 
@@ -49,10 +51,12 @@ public class AssignmentService {
                     .build());
         }
 
+
         return SpecificAssignmentDTO.builder()
                 .imgS3Url(assignment.getImgS3Url())
                 .score(assignment.getScore())
                 .answers(compareDTOS)
+                .studentName(userService.getUserById(studentId).getName())
                 .build();
     }
 
