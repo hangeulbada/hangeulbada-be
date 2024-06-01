@@ -134,17 +134,21 @@ public class GroupService{
         List<Assignment> assignments = assignmentRepository.findByStudentIdIn(group.getStudentIds());
 
         assignments.sort(Comparator.comparing(Assignment::getSubmitDate));
+        log.info("assignments: "+assignments.size());
 
         return assignments.stream().map(assignment -> {
             Optional<Workbook> optionalWorkbook = workbookRepository.findById(assignment.getWorkbookId());
             if (optionalWorkbook.isEmpty()) {
-                throw new NoSuchElementException("No workbook found with the ID: " + assignment.getWorkbookId());
+                log.warn("No workbook found with the ID: {}", assignment.getWorkbookId());
+                return null;
             }
             Workbook workbook = optionalWorkbook.get();
 
             Optional<User> optionalUser = userRepository.findById(assignment.getStudentId());
             if (optionalUser.isEmpty()) {
-                throw new NoSuchElementException("No user found with the student ID: " + assignment.getStudentId());
+                log.warn("No user found with the student ID: {}", assignment.getStudentId());
+                return null;
+
             }
             User user = optionalUser.get();
 
@@ -155,6 +159,7 @@ public class GroupService{
                     .workbookId(workbook.getId())
                     .workbookTitle(workbook.getTitle())
                     .name(user.getName())
+                    .studentId(user.getId())
                     .build();
 
         }).collect(Collectors.toList());

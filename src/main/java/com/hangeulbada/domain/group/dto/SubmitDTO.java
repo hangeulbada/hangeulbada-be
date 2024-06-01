@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SubmitDTO {
     private String name;
+    private String studentId;
     private String workbookId;
     private String workbookTitle;
     private String assignmentId;
