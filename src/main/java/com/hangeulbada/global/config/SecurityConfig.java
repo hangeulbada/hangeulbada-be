@@ -25,13 +25,6 @@ public class SecurityConfig {
     private String secretKey;
     private final JwtTokenProvider jwtTokenProvider;
 
-//    private static final String[] WHITE_LIST = {
-//
-//            "/users/**",
-//            "/swagger-ui/**",
-//            "/v3/api-docs/**",
-//    };
-
     // ⭐️ CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         return request -> {

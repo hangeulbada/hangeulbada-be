@@ -132,23 +132,37 @@ public class GroupService{
         }
         Group group = optionalGroup.get();
         List<Assignment> assignments = assignmentRepository.findByStudentIdIn(group.getStudentIds());
+        List<String> workbookIds = group.getWorkbookIds();
 
         assignments.sort(Comparator.comparing(Assignment::getSubmitDate));
 
-        return assignments.stream().map(assignment -> {
+        return assignments.stream()
+                .filter(assignment -> workbookIds.contains(assignment.getWorkbookId()))
+                .map(assignment -> {
             Optional<Workbook> optionalWorkbook = workbookRepository.findById(assignment.getWorkbookId());
             if (optionalWorkbook.isEmpty()) {
-                throw new NoSuchElementException("No workbook found with the ID: " + assignment.getWorkbookId());
+                log.warn("No workbook found with the ID: {}", assignment.getWorkbookId());
+                return null;
             }
             Workbook workbook = optionalWorkbook.get();
 
             Optional<User> optionalUser = userRepository.findById(assignment.getStudentId());
             if (optionalUser.isEmpty()) {
-                throw new NoSuchElementException("No user found with the student ID: " + assignment.getStudentId());
+                log.warn("No user found with the student ID: {}", assignment.getStudentId());
+                return null;
             }
             User user = optionalUser.get();
 
-            return new SubmitDTO(user.getName(), assignment.getId(), assignment.getScore(), workbook.getId(), workbook.getTitle(), assignment.getSubmitDate().toString().split("T")[0]);
+            return SubmitDTO.builder()
+                    .submitDate(assignment.getSubmitDate().toString().split("T")[0])
+                    .score(assignment.getScore())
+                    .assignmentId(assignment.getId())
+                    .workbookId(workbook.getId())
+                    .workbookTitle(workbook.getTitle())
+                    .name(user.getName())
+                    .studentId(user.getId())
+                    .build();
+
         }).collect(Collectors.toList());
     }
 }

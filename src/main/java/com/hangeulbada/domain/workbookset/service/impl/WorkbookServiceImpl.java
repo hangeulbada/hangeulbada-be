@@ -29,6 +29,13 @@ public class WorkbookServiceImpl implements WorkbookService {
 
 
     @Override
+    public List<String> getQuestionIdsByWorkbookId(String workbookId) {
+        return workbookRepository.findById(workbookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId))
+                .getQuestionIds();
+    }
+
+    @Override
     public WorkbookDto createWorkbook(String teacherId, WorkbookRequestDTO workbookDto) {
 
         Workbook workbook = mapper.map(workbookDto, Workbook.class);
