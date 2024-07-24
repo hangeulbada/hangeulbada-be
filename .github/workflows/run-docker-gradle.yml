@@ -1,0 +1,38 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Run Docker Gradle
+
+on:
+  push:
+    branches: [ "deploy-v2" ]
+  pull_request:
+    branches: [ "deploy-v2" ]
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: self-hosted # <- 우분투 서버에서 실행하도록 하는 명령어
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    - name: Grand execute permission for gradlew # permission 에러가 발생할 경우
+      run: chmod +x /root/actions-runner/_work/test/test/server/farm/gradlew
+
+    - name: build # 경로를 직접 설정하여 빌드 명령을 내려준다.
+      run: /root/actions-runner/_work/test/test/server/farm/gradlew build
+      working-directory: ./server/farm
+
+    - name: Execute Jar File # 추가
+      run: sudo kill -9 `sudo lsof -t -i:5943` & sudo java -jar /home/ubuntu/actions-runner/_work/linode-github-action-test/linode-github-action-test/build/libs/linode-github-action-test-0.0.1-SNAPSHOT.jar &
