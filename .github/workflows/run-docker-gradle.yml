@@ -38,11 +38,6 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-wrapper-
 
-      - name: Set Gradle properties
-        run: |
-          echo "org.gradle.jvmargs=-Xmx1024m -XX:MaxPermSize=256m" >> gradle.properties
-          echo "org.gradle.daemon=false" >> gradle.properties
-
       - name: Build with Gradle
         run: ./gradlew build
 
