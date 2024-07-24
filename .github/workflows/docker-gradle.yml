@@ -26,14 +26,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
 
-    # 2. Gradle 캐시 설정 (옵션)
-    - name: Cache Gradle packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: ${{ runner.os }}-gradle-
-
     # 3. Spring Boot 애플리케이션 빌드
     - name: Build with Gradle
       run: ./gradlew build
@@ -52,6 +44,7 @@ jobs:
     # 6. Docker Hub 이미지 푸시
     - name: Push Docker image to DockerHub
       run: docker push ${{ secrets.DOCKER_USER }}/github-actions-demo
+
   run-docker-image-on-ec2:
     # build-docker-image (위)과정이 완료되어야 실행됩니다.
     needs: build-docker-image
@@ -72,7 +65,7 @@ jobs:
 
       # 3. 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: docker run new container
-        run: sudo docker run --name github-actions-demo --rm -d -p 5943:5943 ${{ secrets.DOCKER_USER }}/github-actions-demo --env-file .env
+        run: sudo docker run --name github-actions-demo --rm -d -p 5943:5943 --env-file .env ${{ secrets.DOCKER_USER }}/github-actions-demo
 
       # 4. 미사용 이미지를 정리합니다
       - name: delete old docker image
