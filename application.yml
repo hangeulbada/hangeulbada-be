@@ -9,7 +9,7 @@ springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
-    path: /api/swagger-ui
+    path: /api
 
 spring:
   application:
