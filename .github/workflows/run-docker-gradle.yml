@@ -27,10 +27,18 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
 
-    - name: Execute Jar File # 추가
-      run: sudo kill -9 `sudo lsof -t -i:5943` & sudo java -jar /home/ubuntu/actions-runner/_work/linode-github-action-test/linode-github-action-test/build/libs/linode-github-action-test-0.0.1-SNAPSHOT.jar &
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Stop existing application
+      run: |
+        if sudo lsof -t -i:5943; then
+          sudo kill -9 $(sudo lsof -t -i:5943)
+        fi
+
+    - name: Execute Jar File
+      run: |
+        nohup java -jar /home/ubuntu/actions-runner/_work/linode-github-action-test/linode-github-action-test/build/libs/linode-github-action-test-0.0.1-SNAPSHOT.jar &
