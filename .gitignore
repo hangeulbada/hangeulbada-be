@@ -35,9 +35,6 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
-application.yml
-application-oauth.yml
-
 
 ### VS Code ###
 .vscode/
