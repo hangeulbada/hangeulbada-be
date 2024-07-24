@@ -35,4 +35,4 @@ jobs:
 
       - name: Execute Jar File
         run: |
-          nohup java -jar /home/ubuntu/actions-runner/_work/back-end/back-end/build/libs/back-end-0.0.1-SNAPSHOT.jar &
+          nohup java -jar /home/ubuntu/actions-runner/_work/back-end/back-end/build/libs/demo-0.0.1-SNAPSHOT.jar &
