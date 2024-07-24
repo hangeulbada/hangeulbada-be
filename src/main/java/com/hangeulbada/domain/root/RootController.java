@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RootController {
     @GetMapping("/")
     public String root() {
-        return "hangeulbada";
+        return "hangeulbada API server";
     }
 }
