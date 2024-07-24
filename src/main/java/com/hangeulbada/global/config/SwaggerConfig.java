@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 // 로컬서버 실행시 주석처리
-@OpenAPIDefinition(info = @Info(title = "한글바다 API 명세서"), servers = {@Server(url = "https://ssoxong.xyz", description = "한글바다 HTTPS API 서버")})
+@OpenAPIDefinition(info = @Info(title = "한글바다 API 명세서"), servers = {@Server(url = "https://hangeulbada.gssoxong.xyz", description = "한글바다 HTTPS API 서버")})
 @Configuration
 public class SwaggerConfig {
     @Bean
