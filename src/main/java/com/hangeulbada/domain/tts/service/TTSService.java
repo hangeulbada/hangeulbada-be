@@ -25,8 +25,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class TTSService {
     // S3 설정
-//    @Value("${cloud.aws.s3.bucket.name}")
-    private final String bucketName="bada-static-bucket";
+    @Value("${cloud.aws.s3.bucket.name}")
+    private String bucketName;
     @Value("${cloud.aws.s3.bucket.region}")
     private String region;
     @Value("${cloud.aws.s3.access.key}")
