@@ -27,12 +27,11 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
-    - name: Grand execute permission for gradlew # permission 에러가 발생할 경우
-      run: chmod +x /root/actions-runner/_work/test/test/server/farm/gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
 
-    - name: build # 경로를 직접 설정하여 빌드 명령을 내려준다.
-      run: /root/actions-runner/_work/test/test/server/farm/gradlew build
-      working-directory: ./server/farm
+    - name: Build with Gradle
+      run: ./gradlew build
 
     - name: Execute Jar File # 추가
       run: sudo kill -9 `sudo lsof -t -i:5943` & sudo java -jar /home/ubuntu/actions-runner/_work/linode-github-action-test/linode-github-action-test/build/libs/linode-github-action-test-0.0.1-SNAPSHOT.jar &
