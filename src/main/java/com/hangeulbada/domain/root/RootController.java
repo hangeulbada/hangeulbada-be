@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RootController {
     @GetMapping("/")
     public String root() {
-        return "hangeulbada API server";
+        return "hangeulbada HTTPS API server";
     }
 }
