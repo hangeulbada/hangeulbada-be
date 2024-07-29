@@ -18,6 +18,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class OCRService {
+
     @Value("${clova.ocr.secretkey}") String secretKey;
     @Value("${clova.ocr.api.url}") String apiURL;
     @Value("${cloud.aws.s3.bucket.url}") String s3Url;
