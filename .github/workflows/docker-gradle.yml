@@ -25,10 +25,14 @@ jobs:
        # 2. gradlew에 실행 권한 부여
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
+    # 2. Gradle 캐시 설정 (옵션)
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: ${{ runner.os }}-gradle-
 
-    # 3. Spring Boot 애플리케이션 빌드
-    - name: Build with Gradle
-      run: ./gradlew build
 
     # 5. DockerHub 로그인
     - name: Log in to DockerHub
