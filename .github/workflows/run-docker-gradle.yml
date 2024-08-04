@@ -2,9 +2,9 @@ name: Run Docker Gradle
 
 on:
   push:
-    branches: [ "deploy-v2" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "deploy-v2" ]
+    branches: [ "main" ]
 permissions:
   contents: read
 
