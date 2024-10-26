@@ -1,10 +1,7 @@
 package com.hangeulbada.domain.workbookset.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
-import com.hangeulbada.domain.workbookset.dto.ExceptionResponse;
-import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
-import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
-import com.hangeulbada.domain.workbookset.dto.WorkbooksDTO;
+import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -60,6 +57,15 @@ public class WorkbookController {
     public ResponseEntity<String> deleteWorkbookById(@PathVariable(name="workbookId") String id, Principal principal){
         workbookService.deleteWorkbook(principal.getName(), id);
         return new ResponseEntity<>("정상적으로 세트가 삭제되었습니다.",HttpStatus.OK);
+    }
+
+    @PostMapping("/workbook/add")
+    @Operation(summary = "공유 문제집 추가", description = "공유된 문제집 코드를 사용해 내 문제집에 추가합니다.")
+    @ApiResponse(responseCode = "200", description = "문제집 추가 성공")
+    @ApiResponse(responseCode = "403", description = "이미 클래스에 참여하고 있음")
+    public ResponseEntity<?> addSharedWorkbook(@RequestBody WorkbookAddRequest workbookAddRequest, Principal principal){
+        WorkbookDto newWorkbook = workbookService.addWorkbook(workbookAddRequest, principal.getName());
+        return ResponseEntity.ok(newWorkbook);
     }
 
     @StudentTag
