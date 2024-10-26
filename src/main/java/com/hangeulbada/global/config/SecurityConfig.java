@@ -32,7 +32,7 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000")); // ⭐️ 허용할 origin
-            config.addAllowedOriginPattern("https://hangeulbada.vercel.app");
+            config.addAllowedOriginPattern("https://hangeulbada-fe.vercel.app");
             config.addAllowedOriginPattern("https://hangeulbada.ssoxong.xyz");
             config.setAllowCredentials(true);
             return config;

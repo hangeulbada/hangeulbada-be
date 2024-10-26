@@ -1,7 +1,9 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
+import com.hangeulbada.domain.group.dto.GroupAttendResponse;
 import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
+import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,6 +70,28 @@ public class WorkbookServiceImpl implements WorkbookService {
         if (!workbook.getTeacherId().equals(teacherId))
             throw new NotAuthorizedException("작성자만 삭제할 수 있습니다.");
         workbookRepository.deleteById(workbookId);
+    }
+
+    @Override
+    public WorkbookDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
+        Optional<Workbook> workbookOptional = workbookRepository.findById(workbookAddRequest.getWorkbookId());
+        if(workbookOptional.isPresent()){
+            Workbook w = workbookOptional.get();
+            WorkbookDto newWorkbookDto = WorkbookDto.builder()
+                    .teacherId(teacherId)
+                    .title(w.getTitle())
+                    .description(w.getDescription())
+                    .difficulty(w.getDifficulty())
+                    .questionNum(w.getQuestionNum())
+                    .questionIds(w.getQuestionIds())
+                    .startDate(workbookAddRequest.getStartDate())
+                    .endDate(workbookAddRequest.getEndDate())
+                    .build();
+            Workbook newWorkbook = mapper.map(newWorkbookDto, Workbook.class);
+            Workbook workbookAdded = workbookRepository.save(newWorkbook);
+            return mapper.map(workbookAdded, WorkbookDto.class);
+        }
+        return null;
     }
 
 
