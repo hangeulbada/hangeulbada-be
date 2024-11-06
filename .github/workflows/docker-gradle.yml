@@ -60,11 +60,11 @@ jobs:
         run: sudo docker stop bada-spring-server
 
       - name: Create .env file
-        run: echo "${{ secrets.BADA_ENV }}" > .env
+        run: echo "${{ secrets.BADA_ENV }}" > ~/bada-spring/.env
 
       # 3. 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: docker run new container
-        run: sudo docker run --name bada-spring-server --rm -d -p 5943:5943 --env-file .env ${{ secrets.DOCKER_USER }}/bada-spring
+        run: sudo docker run --name bada-spring-server --rm -d -p 5943:5943 --env-file ~/bada-spring/.env ${{ secrets.DOCKER_USER }}/bada-spring
 
       # # 4. 미사용 이미지를 정리합니다
       # - name: delete old docker image
