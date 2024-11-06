@@ -3,6 +3,7 @@ package com.hangeulbada.domain.workbookset.service.impl;
 import com.hangeulbada.domain.tts.service.TTSService;
 import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Question;
+import com.hangeulbada.domain.workbookset.entity.Tag;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +80,10 @@ public class QuestionServiceImpl implements QuestionService {
         QuestionDto questionDto = QuestionDto.builder()
                 .content(questionRequestDto.getContent().replace('.', ' ').strip())
                 .teacherId(teacherId)
+                .difficulty(questionRequestDto.getDifficulty())
+                .tags(Arrays.stream(questionRequestDto.getTags())
+                        .map(Tag::valueOf) // String을 Tag enum으로 변환
+                        .collect(Collectors.toSet()))
                 .audioFilePath(audioFilePath)
                 .build();
         Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
