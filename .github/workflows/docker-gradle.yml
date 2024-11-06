@@ -56,8 +56,14 @@ jobs:
         run: sudo docker pull ${{ secrets.DOCKER_USER }}/bada-spring
 
       # 2. 기존의 컨테이너를 중지시킵니다
-      - name: docker stop container
-        run: sudo docker stop bada-spring-server
+      - name: Stop container if running
+        run: |
+          if [ "$(sudo docker ps -q -f name=bada-spring-server)" ]; then
+            echo "Stopping container bada-spring-server..."
+            sudo docker stop bada-spring-server
+          else
+            echo "Container bada-spring-server is not running. Skipping stop command."
+          fi
 
       - name: Create .env file
         run: echo "${{ secrets.BADA_ENV }}" > ~/bada-spring/.env
