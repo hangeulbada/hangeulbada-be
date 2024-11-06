@@ -49,6 +49,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public QuestionRequestListDto createAiGeneratedQuestions(ClaudeRequestDto claudeRequestDto) {
+        // API 요청
+        return null;
+    }
+
+    @Override
     public void deleteQuestion(String teacherId, String questionId) {
         Question question= questionRepository.findById(questionId)
                 .orElseThrow(()-> new ResourceNotFoundException("Question","id", questionId));
