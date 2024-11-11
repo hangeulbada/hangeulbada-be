@@ -1,7 +1,10 @@
 package com.hangeulbada.domain.workbookset.dto;
 
+import lombok.Getter;
+
+@Getter
 public class ClaudeRequestDto {
-    private String questionsType;
-    private Integer studentAge;
-    private Integer questionNum;
+    private Integer age;
+    private String rule;
+    private Integer count;
 }

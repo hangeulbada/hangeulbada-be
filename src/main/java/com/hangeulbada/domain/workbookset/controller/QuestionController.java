@@ -33,7 +33,7 @@ public class QuestionController {
     @PostMapping("/ai-generate")
     @Operation(summary = "AI 문제 생성 세트", description = "AI로 문제를 생성합니다.")
     @ApiResponse(responseCode = "201", description = "생성 성공")
-    public ResponseEntity<QuestionRequestListDto> createAiGeneratedWorkbook(@Valid @RequestBody ClaudeRequestDto claudeRequestDto){
+    public ResponseEntity<String> createAiGeneratedWorkbook(@Valid @RequestBody ClaudeRequestDto claudeRequestDto){
         return new ResponseEntity<>(questionService.createAiGeneratedQuestions(claudeRequestDto), HttpStatus.CREATED);
     }
 

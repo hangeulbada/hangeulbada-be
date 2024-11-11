@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
+import com.hangeulbada.domain.externalapi.service.ApiServiceImpl;
 import com.hangeulbada.domain.tts.service.TTSService;
 import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Question;
@@ -31,6 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final WorkbookRepository workbookRepository;
     private final ModelMapper mapper;
     private final TTSService ttsService;
+    private final ApiServiceImpl apiService;
 
     @Override
     public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
@@ -49,9 +51,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionRequestListDto createAiGeneratedQuestions(ClaudeRequestDto claudeRequestDto) {
-        // API 요청
-        return null;
+    public String createAiGeneratedQuestions(ClaudeRequestDto claudeRequestDto) {
+        String genQuestionsString = apiService.postToClaude(claudeRequestDto);
+        return genQuestionsString;
     }
 
     @Override
