@@ -17,6 +17,8 @@ public class Question {
     private String id;
     private String teacherId;
     private String content;
+    private double difficulty;
+    private String[] tags;
     private String audioFilePath;
 
 }

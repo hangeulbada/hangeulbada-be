@@ -52,7 +52,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<WorkbookDto> getQuestionsToCreate(@PathVariable(name = "workbookId") String workbookId,
-                                                            @Valid @RequestBody QuestionRequestListDto questions,
+                                                            @Valid @RequestBody List<QuestionRequestDto> questions,
                                                             Principal principal){
         return new ResponseEntity<>(questionService.getQuestionsToCreate(principal.getName(), workbookId, questions), HttpStatus.CREATED);
     }
