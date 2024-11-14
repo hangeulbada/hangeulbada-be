@@ -14,6 +14,6 @@ public class IncorrectAnswerTag {
     @Id
     private String id;
     private String studentId;
-    private Tag tag;
+    private String tag;
     private String questionId;
 }

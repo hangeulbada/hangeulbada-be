@@ -81,9 +81,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .content(questionRequestDto.getContent().replace('.', ' ').strip())
                 .teacherId(teacherId)
                 .difficulty(questionRequestDto.getDifficulty())
-                .tags(Arrays.stream(questionRequestDto.getTags())
-                        .map(Tag::valueOf) // String을 Tag enum으로 변환
-                        .collect(Collectors.toSet()))
+                .tags(questionRequestDto.getTags())
                 .audioFilePath(audioFilePath)
                 .build();
         Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
@@ -97,12 +95,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, QuestionRequestListDto questions) {
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionRequestDto> questions) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
-        for(String q : questions.getContent()){
-            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q).audioFilePath(ttsService.tts(q)).build();
+        for(QuestionRequestDto q : questions){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(q.getDifficulty()).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
         }

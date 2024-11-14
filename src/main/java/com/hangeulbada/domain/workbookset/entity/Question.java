@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.util.Set;
 
 @Data
 @Builder
@@ -19,7 +18,7 @@ public class Question {
     private String teacherId;
     private String content;
     private double difficulty;
-    private Set<Tag> tags;
+    private String[] tags;
     private String audioFilePath;
 
 }

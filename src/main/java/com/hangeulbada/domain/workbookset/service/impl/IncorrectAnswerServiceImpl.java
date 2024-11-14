@@ -31,8 +31,11 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
 
     @Override
     public void saveIncorrectAnswerTags(String studentId, String[] inputTags, String questionId) {
-        Set<Tag> tags = tagService.validateAndConvertTags(inputTags);
-        for(Tag tag: tags){
+//        Set<Tag> tags = tagService.validateAndConvertTags(inputTags);
+//        for(Tag tag: tags){
+//            incorrectsRepository.save(mapper.map(IncorrectAnswerTagDto.builder().studentId(studentId).questionId(questionId).build(), IncorrectAnswerTag.class));
+//        }
+        for(String tag : inputTags) {
             incorrectsRepository.save(mapper.map(IncorrectAnswerTagDto.builder().studentId(studentId).questionId(questionId).build(), IncorrectAnswerTag.class));
         }
     }

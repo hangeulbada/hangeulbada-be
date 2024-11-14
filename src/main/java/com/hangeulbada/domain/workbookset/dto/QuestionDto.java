@@ -20,6 +20,6 @@ public class QuestionDto {
     private String teacherId;
     private String content;
     private double difficulty;
-    private Set<Tag> tags;
+    private String[] tags;
     private String audioFilePath;
 }
