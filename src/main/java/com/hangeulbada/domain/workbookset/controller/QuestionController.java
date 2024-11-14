@@ -30,6 +30,13 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getAllQuestions(principal.getName()));
     }
 
+    @PostMapping("/ai-generate")
+    @Operation(summary = "AI 문제 생성 세트", description = "AI로 문제를 생성합니다.")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
+    public ResponseEntity<String> createAiGeneratedWorkbook(@Valid @RequestBody ClaudeRequestDto claudeRequestDto){
+        return new ResponseEntity<>(questionService.createAiGeneratedQuestions(claudeRequestDto), HttpStatus.CREATED);
+    }
+
     @DeleteMapping("/questions/{questionId}")
     @Operation(summary = "문제 삭제", description = "문제를 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "삭제 성공")

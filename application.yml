@@ -51,3 +51,7 @@ cloud:
       access:
         key: ${AWS_ACCESS_KEY}
         secret: ${AWS_SECRET_ACCESS_KEY}
+
+python:
+  api:
+    url: ${AI_PY_URL}

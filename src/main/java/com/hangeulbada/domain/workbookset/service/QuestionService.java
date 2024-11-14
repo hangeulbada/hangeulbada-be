@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface QuestionService {
     List<QuestionDto> getQuestionsByWorkbookId(String workbookId);
+    String createAiGeneratedQuestions(ClaudeRequestDto claudeRequestDto);
     void deleteQuestion(String teacherId, String questionId);
     List<QuestionDto> getAllQuestions(String teacherId);
     QuestionDto createQuestion(String teacherId, String workbookId, QuestionRequestDto questionsDto);
