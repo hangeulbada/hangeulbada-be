@@ -1,16 +1,14 @@
 package com.hangeulbada.domain.workbookset.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class QuestionRequestListDto {
     private List<String> content;
 }

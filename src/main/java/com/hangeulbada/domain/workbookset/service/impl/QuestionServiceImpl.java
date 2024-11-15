@@ -12,6 +12,7 @@ import com.hangeulbada.domain.workbookset.exception.WorkbookException;
 import com.hangeulbada.domain.workbookset.repository.QuestionRepository;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
+import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -19,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final ModelMapper mapper;
     private final TTSService ttsService;
     private final ApiServiceImpl apiService;
+    private final WorkbookService workbookService;
 
     @Override
     public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
@@ -67,6 +68,7 @@ public class QuestionServiceImpl implements QuestionService {
         for(Workbook w : workbookRepository.findAll()){
             if(w.getQuestionIds().contains(questionId)) {
                 deleteQuestionFromWorkbook(w.getTeacherId(), w.getId(), questionId);
+                workbookService.updateWorkbookDifficulty(w.getId());
             }
         }
         ttsService.deleteFileFromS3(question.getAudioFilePath());
@@ -99,6 +101,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
         w.getQuestionIds().add(newQuestion.getId());
         workbookRepository.save(w);
+        workbookService.updateWorkbookDifficulty(w.getId());
         return mapper.map(newQuestion, QuestionDto.class);
     }
 
@@ -107,12 +110,16 @@ public class QuestionServiceImpl implements QuestionService {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
+        double diffSum = 0.0;
         for(QuestionRequestDto q : questions){
             QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(q.getDifficulty()).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
+            diffSum += newQuestion.getDifficulty();
         }
         w.setQuestionIds(questionIds);
+        if(diffSum<1|| questions.isEmpty()) w.setDifficulty(0.0);
+        else w.setDifficulty(Math.round(diffSum/questions.size() * 10) / 10.0);
         workbookRepository.save(w);
         return mapper.map(w, WorkbookDto.class);
     }
@@ -122,11 +129,18 @@ public class QuestionServiceImpl implements QuestionService {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> qIds = new ArrayList<>();
+        double diffSum = 0.0;
         for(String qId : questionIds.getContent()){
             Optional<Question> question = questionRepository.findById(qId);
-            if (question.isPresent()) qIds.add(qId);
+            if (question.isPresent()){
+                qIds.add(qId);
+                diffSum+=question.get().getDifficulty();
+            }
         }
         w.setQuestionIds(qIds);
+        log.info("qid들 저장 완료");
+        if(diffSum<1|| qIds.isEmpty()) w.setDifficulty(0.0);
+        else w.setDifficulty(Math.round(diffSum/qIds.size() * 10) / 10.0);
         workbookRepository.save(w);
         return mapper.map(w, WorkbookDto.class);
     }
@@ -158,7 +172,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotAuthorizedException("작성자만 삭제할 수 있습니다.");
         workbook.getQuestionIds().remove(question.getId());
         workbookRepository.save(workbook);
-//        questionRepository.delete(question);
+        workbookService.updateWorkbookDifficulty(workbook.getId());
     }
 
     @Override
@@ -174,6 +188,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotAuthorizedException("작성자만 수정할 수 있습니다.");
         workbook.getQuestionIds().add(question.getId());
         workbookRepository.save(workbook);
+        workbookService.updateWorkbookDifficulty(workbook.getId());
     }
 
     @Override

@@ -7,8 +7,10 @@ import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
+import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
+import com.hangeulbada.domain.workbookset.repository.QuestionRepository;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +29,31 @@ import java.util.stream.Collectors;
 public class WorkbookServiceImpl implements WorkbookService {
 
     private final WorkbookRepository workbookRepository;
+    private final QuestionRepository questionRepository;
     private final GroupRepository groupRepository;
     private final ModelMapper mapper;
 
+
+    @Override
+    public void updateWorkbookDifficulty(String workbookId) {
+        double calculatedDiff = calculateWorkbookDifficulty(workbookId);
+        Workbook workbook = workbookRepository.findById(workbookId).get();
+        workbook.setDifficulty(
+                calculatedDiff <1 ? calculatedDiff :Math.round(calculatedDiff * 10) / 10.0
+        );
+        workbookRepository.save(workbook);
+    }
+
+    @Override
+    public double calculateWorkbookDifficulty(String workbookId) {
+        List<String> qIds = workbookRepository.findById(workbookId).orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId))
+                .getQuestionIds();
+        if (qIds == null || qIds.isEmpty()) return 0.0;
+        return questionRepository.findByIdIn(qIds).stream()
+                .mapToDouble(Question::getDifficulty)
+                .average()
+                .orElse(0.0);
+    }
 
     @Override
     public List<String> getQuestionIdsByWorkbookId(String workbookId) {
