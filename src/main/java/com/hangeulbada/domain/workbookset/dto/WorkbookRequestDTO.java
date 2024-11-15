@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class WorkbookRequestDTO {
-//    private String teacherId;
     private String title;
     private String description;
-    private double difficulty;
     private int questionNum;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
