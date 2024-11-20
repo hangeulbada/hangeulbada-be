@@ -63,7 +63,7 @@ public class WorkbookController {
     @Operation(summary = "공유 문제집 추가", description = "공유된 문제집 코드를 사용해 내 문제집에 추가합니다.")
     @ApiResponse(responseCode = "200", description = "문제집 추가 성공")
     @ApiResponse(responseCode = "403", description = "이미 클래스에 참여하고 있음")
-    public ResponseEntity<?> addSharedWorkbook(@RequestBody WorkbookAddRequest workbookAddRequest, Principal principal){
+    public ResponseEntity<WorkbookDto> addSharedWorkbook(@RequestBody WorkbookAddRequest workbookAddRequest, Principal principal){
         WorkbookDto newWorkbook = workbookService.addWorkbook(workbookAddRequest, principal.getName());
         return ResponseEntity.ok(newWorkbook);
     }
