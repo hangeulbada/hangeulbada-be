@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ClaudeRequestDto {
-    private Integer age;
+    private Integer difficulty;
     private String rule;
     private Integer count;
 }
