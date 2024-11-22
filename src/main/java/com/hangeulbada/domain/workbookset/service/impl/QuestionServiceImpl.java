@@ -118,8 +118,8 @@ public class QuestionServiceImpl implements QuestionService {
             diffSum += newQuestion.getDifficulty();
         }
         w.setQuestionIds(questionIds);
-        if(diffSum<1|| questions.isEmpty()) w.setDifficulty(0.0);
-        else w.setDifficulty(Math.round(diffSum/questions.size() * 10) / 10.0);
+        if(diffSum<1|| questions.isEmpty()) w.setDifficulty(0);
+        else w.setDifficulty((int)Math.round(diffSum/questions.size()));
         workbookRepository.save(w);
         return mapper.map(w, WorkbookDto.class);
     }
@@ -139,8 +139,8 @@ public class QuestionServiceImpl implements QuestionService {
         }
         w.setQuestionIds(qIds);
         log.info("qid들 저장 완료");
-        if(diffSum<1|| qIds.isEmpty()) w.setDifficulty(0.0);
-        else w.setDifficulty(Math.round(diffSum/qIds.size() * 10) / 10.0);
+        if(diffSum<1|| qIds.isEmpty()) w.setDifficulty(0);
+        else w.setDifficulty((int)Math.round(diffSum/qIds.size()));
         workbookRepository.save(w);
         return mapper.map(w, WorkbookDto.class);
     }

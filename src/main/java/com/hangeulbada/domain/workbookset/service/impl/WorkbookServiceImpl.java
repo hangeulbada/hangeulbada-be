@@ -34,11 +34,9 @@ public class WorkbookServiceImpl implements WorkbookService {
 
     @Override
     public void updateWorkbookDifficulty(String workbookId) {
-        double calculatedDiff = calculateWorkbookDifficulty(workbookId);
+        int calculatedDiff = (int)Math.round(calculateWorkbookDifficulty(workbookId));
         Workbook workbook = workbookRepository.findById(workbookId).get();
-        workbook.setDifficulty(
-                calculatedDiff <1 ? calculatedDiff :Math.round(calculatedDiff * 10) / 10.0
-        );
+        workbook.setDifficulty(calculatedDiff);
         workbookRepository.save(workbook);
     }
 
@@ -46,7 +44,7 @@ public class WorkbookServiceImpl implements WorkbookService {
     public double calculateWorkbookDifficulty(String workbookId) {
         List<String> qIds = workbookRepository.findById(workbookId).orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId))
                 .getQuestionIds();
-        if (qIds == null || qIds.isEmpty()) return 0.0;
+        if (qIds == null || qIds.isEmpty()) return 0;
         return questionRepository.findByIdIn(qIds).stream()
                 .mapToDouble(Question::getDifficulty)
                 .average()

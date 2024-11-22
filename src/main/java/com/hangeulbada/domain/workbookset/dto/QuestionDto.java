@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nonapi.io.github.classgraph.json.Id;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +18,7 @@ public class QuestionDto {
     private String id;
     private String teacherId;
     private String content;
-    private double difficulty;
+    private Integer difficulty;
     private String[] tags;
     private String audioFilePath;
 }
