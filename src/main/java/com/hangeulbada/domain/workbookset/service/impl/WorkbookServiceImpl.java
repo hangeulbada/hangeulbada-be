@@ -1,6 +1,5 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
-import com.hangeulbada.domain.group.dto.GroupAttendResponse;
 import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
 import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -98,24 +96,20 @@ public class WorkbookServiceImpl implements WorkbookService {
 
     @Override
     public WorkbookDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
-        Optional<Workbook> workbookOptional = workbookRepository.findById(workbookAddRequest.getWorkbookId());
-        if(workbookOptional.isPresent()){
-            Workbook w = workbookOptional.get();
-            WorkbookDto newWorkbookDto = WorkbookDto.builder()
-                    .teacherId(teacherId)
-                    .title(w.getTitle())
-                    .description(w.getDescription())
-                    .difficulty(w.getDifficulty())
-                    .questionNum(w.getQuestionNum())
-                    .questionIds(w.getQuestionIds())
-                    .startDate(workbookAddRequest.getStartDate())
-                    .endDate(workbookAddRequest.getEndDate())
-                    .build();
-            Workbook newWorkbook = mapper.map(newWorkbookDto, Workbook.class);
-            Workbook workbookAdded = workbookRepository.save(newWorkbook);
-            return mapper.map(workbookAdded, WorkbookDto.class);
-        }
-        return null;
+        Workbook w = workbookRepository.findById(workbookAddRequest.getWorkbookId())
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookAddRequest.getWorkbookId()));
+        WorkbookDto newWorkbookDto = WorkbookDto.builder()
+                .teacherId(teacherId)
+                .title(w.getTitle())
+                .description(w.getDescription())
+                .difficulty(w.getDifficulty())
+                .questionNum(w.getQuestionNum())
+                .questionIds(w.getQuestionIds())
+                .startDate(workbookAddRequest.getStartDate())
+                .endDate(workbookAddRequest.getEndDate())
+                .build();
+        Workbook workbookAdded = workbookRepository.save(mapper.map(newWorkbookDto, Workbook.class));
+        return mapper.map(workbookAdded, WorkbookDto.class);
     }
 
 
