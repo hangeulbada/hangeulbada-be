@@ -20,7 +20,7 @@ public class WorkbookDto {
     private String teacherId;
     private String title;
     private String description;
-    private double difficulty;
+    private Integer difficulty;
     private int questionNum;
     @Builder.Default
     private List<String> questionIds = new ArrayList<>();    private LocalDateTime startDate;

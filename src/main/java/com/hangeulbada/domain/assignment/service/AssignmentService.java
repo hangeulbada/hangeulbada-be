@@ -9,7 +9,7 @@ import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import com.hangeulbada.domain.ocr.service.OCRService;
 import com.hangeulbada.domain.user.service.UserService;
-import com.hangeulbada.domain.workbookset.dto.QuestionDto;
+import com.hangeulbada.domain.workbookset.dto.QuestionResponseDto;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
@@ -110,8 +110,8 @@ public class AssignmentService {
     }
 
     public List<ScoreDTO> getScores(String workbookId, List<String> ocrText) {
-        List<QuestionDto> questionDtos = questionService.getQuestionsByWorkbookId(workbookId);
-        List<String> questions = questionDtos.stream().map(QuestionDto::getContent).toList();
+        List<QuestionResponseDto> questionDtos = questionService.getQuestionsByWorkbookId(workbookId);
+        List<String> questions = questionDtos.stream().map(QuestionResponseDto::getContent).toList();
         List<ScoreDTO> scores = new ArrayList<>();
 
         for (int i = 0; i < questions.size() && i < ocrText.size(); i++) {
