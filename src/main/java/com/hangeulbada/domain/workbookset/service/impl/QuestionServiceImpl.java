@@ -4,7 +4,6 @@ import com.hangeulbada.domain.externalapi.service.ApiServiceImpl;
 import com.hangeulbada.domain.tts.service.TTSService;
 import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Question;
-import com.hangeulbada.domain.workbookset.entity.Tag;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
 import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
@@ -82,7 +81,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionDto createQuestion(String teacherId, String workbookId, QuestionRequestDto questionRequestDto) {
+    public QuestionDto createQuestion(String teacherId, String workbookId, QuestionResponseDto questionRequestDto) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         String audioFilePath = ttsService.tts(questionRequestDto.getContent());
@@ -90,7 +89,7 @@ public class QuestionServiceImpl implements QuestionService {
         QuestionDto questionDto = QuestionDto.builder()
                 .content(questionRequestDto.getContent().replace('.', ' ').strip())
                 .teacherId(teacherId)
-                .difficulty(questionRequestDto.getDifficulty())
+                .difficulty(apiService.calculateQuestionDiff(questionRequestDto.getContent()))
                 .tags(questionRequestDto.getTags())
                 .audioFilePath(audioFilePath)
                 .build();
@@ -106,13 +105,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionRequestDto> questions) {
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionResponseDto> questions) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
         double diffSum = 0.0;
-        for(QuestionRequestDto q : questions){
-            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(q.getDifficulty()).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
+        for(QuestionResponseDto q : questions){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(apiService.calculateQuestionDiff(q.getContent())).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
             diffSum += newQuestion.getDifficulty();

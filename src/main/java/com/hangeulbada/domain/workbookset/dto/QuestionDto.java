@@ -1,6 +1,5 @@
 package com.hangeulbada.domain.workbookset.dto;
 
-import com.hangeulbada.domain.workbookset.entity.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
