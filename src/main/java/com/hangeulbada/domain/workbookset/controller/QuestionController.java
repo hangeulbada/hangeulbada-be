@@ -26,7 +26,7 @@ public class QuestionController {
     @PostMapping("/questions")
     @Operation(summary = "전체 문제 조회", description = "유저가 생성한 모든 문제를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
-    public ResponseEntity<List<QuestionDto>> getAllQuestions(Principal principal){
+    public ResponseEntity<List<QuestionResponseDto>> getAllQuestions(Principal principal){
         return ResponseEntity.ok(questionService.getAllQuestions(principal.getName()));
     }
 
@@ -59,7 +59,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     public ResponseEntity<WorkbookDto> getQuestionsToCreate(@PathVariable(name = "workbookId") String workbookId,
-                                                            @Valid @RequestBody List<QuestionResponseDto> questions,
+                                                            @Valid @RequestBody List<QuestionContentResponseDto> questions,
                                                             Principal principal){
         return new ResponseEntity<>(questionService.getQuestionsToCreate(principal.getName(), workbookId, questions), HttpStatus.CREATED);
     }
@@ -68,7 +68,7 @@ public class QuestionController {
     @Operation(summary = "세트 내 문제 조회", description = "세트 내의 모든 문제를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
-    public ResponseEntity<List<QuestionDto>> getQuestionsByWorkbookId(@PathVariable(name="workbookId")String id){
+    public ResponseEntity<List<QuestionResponseDto>> getQuestionsByWorkbookId(@PathVariable(name="workbookId")String id){
         return ResponseEntity.ok(questionService.getQuestionsByWorkbookId(id));
     }
 
@@ -76,7 +76,7 @@ public class QuestionController {
     @Operation(summary = "문제 조회", description = "세트 내의 문제를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ApiResponse(responseCode = "404", description = "존재하지 않는 객체입니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
-    public ResponseEntity<QuestionDto> getQuestionById(@PathVariable(name="workbookId")String workbookId,
+    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable(name="workbookId")String workbookId,
                                                        @PathVariable(name="questionId")String questionId){
         return new ResponseEntity<>(questionService.getQuestionById(workbookId,questionId), HttpStatus.OK);
     }
@@ -102,8 +102,8 @@ public class QuestionController {
     @ApiResponse(responseCode = "401", description = "작성자만 수정할 수 있습니다. (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "500", description = "S3 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     @ApiResponse(responseCode = "502", description = "TTS API 오류 (Exception 발생)", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
-    public ResponseEntity<QuestionDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
-                                                      @Valid @RequestBody QuestionResponseDto questionDto,
+    public ResponseEntity<QuestionResponseDto> createQuestion(@PathVariable(name = "workbookId") String workbookId,
+                                                      @Valid @RequestBody QuestionContentResponseDto questionDto,
                                                       Principal principal){
         return new ResponseEntity<>(questionService.createQuestion(principal.getName(), workbookId, questionDto), HttpStatus.CREATED);
     }

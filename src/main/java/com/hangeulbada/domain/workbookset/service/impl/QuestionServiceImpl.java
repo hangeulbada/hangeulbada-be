@@ -35,16 +35,16 @@ public class QuestionServiceImpl implements QuestionService {
     private final WorkbookService workbookService;
 
     @Override
-    public List<QuestionDto> getQuestionsByWorkbookId(String workbookId) {
+    public List<QuestionResponseDto> getQuestionsByWorkbookId(String workbookId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
 
         List<String> questionIds = workbook.getQuestionIds();
-        List<QuestionDto> questionList = new ArrayList<>();
+        List<QuestionResponseDto> questionList = new ArrayList<>();
         for (String q: questionIds) {
             Question question = questionRepository.findById(q)
                     .orElseThrow(()-> new ResourceNotFoundException("Question","id", q));
-            questionList.add(mapper.map(question, QuestionDto.class));
+            questionList.add(mapper.map(question, QuestionResponseDto.class));
         }
 
         return questionList;
@@ -75,13 +75,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionDto> getAllQuestions(String teacherId) {
+    public List<QuestionResponseDto> getAllQuestions(String teacherId) {
         List<Question> questionList = questionRepository.findByTeacherId(teacherId);
-        return questionList.stream().map(question -> mapper.map(question, QuestionDto.class)).collect(Collectors.toList());
+        return questionList.stream().map(question -> mapper.map(question, QuestionResponseDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public QuestionDto createQuestion(String teacherId, String workbookId, QuestionResponseDto questionRequestDto) {
+    public QuestionResponseDto createQuestion(String teacherId, String workbookId, QuestionContentResponseDto questionRequestDto) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         String audioFilePath = ttsService.tts(questionRequestDto.getContent());
@@ -101,16 +101,16 @@ public class QuestionServiceImpl implements QuestionService {
         w.getQuestionIds().add(newQuestion.getId());
         workbookRepository.save(w);
         workbookService.updateWorkbookDifficulty(w.getId());
-        return mapper.map(newQuestion, QuestionDto.class);
+        return mapper.map(newQuestion, QuestionResponseDto.class);
     }
 
     @Override
-    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionResponseDto> questions) {
+    public WorkbookDto getQuestionsToCreate(String teacherId, String workbookId, List<QuestionContentResponseDto> questions) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         List<String> questionIds = new ArrayList<>();
         double diffSum = 0.0;
-        for(QuestionResponseDto q : questions){
+        for(QuestionContentResponseDto q : questions){
             QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(apiService.calculateQuestionDiff(q.getContent())).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
             Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
             questionIds.add(newQuestion.getId());
@@ -145,7 +145,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionDto getQuestionById(String workbookId, String questionId) {
+    public QuestionResponseDto getQuestionById(String workbookId, String questionId) {
         Workbook workbook = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
 
@@ -155,7 +155,7 @@ public class QuestionServiceImpl implements QuestionService {
         if(workbook.getQuestionIds().stream().noneMatch(q -> q.equals(question.getId()))){
             throw new WorkbookException(HttpStatus.BAD_REQUEST, "세트에 해당 문제가 존재하지 않습니다.");
         }
-        return mapper.map(question,QuestionDto.class);
+        return mapper.map(question,QuestionResponseDto.class);
     }
 
     @Override
