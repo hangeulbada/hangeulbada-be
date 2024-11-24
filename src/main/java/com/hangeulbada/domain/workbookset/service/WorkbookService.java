@@ -3,6 +3,7 @@ package com.hangeulbada.domain.workbookset.service;
 import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
+import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
 
 import java.util.List;
 

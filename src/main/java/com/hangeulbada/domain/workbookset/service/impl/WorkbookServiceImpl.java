@@ -5,6 +5,7 @@ import com.hangeulbada.domain.group.repository.GroupRepository;
 import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
+import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
