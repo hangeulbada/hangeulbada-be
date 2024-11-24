@@ -4,6 +4,7 @@ import com.hangeulbada.domain.annotation.StudentTag;
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
 import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
+import com.hangeulbada.domain.externalapi.service.ApiServiceImpl;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AssignmentController {
     private final AssignmentService assignmentService;
+    private final ApiServiceImpl apiService;
 
     @StudentTag
     @PostMapping("/submit")
