@@ -5,6 +5,7 @@ import com.hangeulbada.domain.group.repository.GroupRepository;
 import com.hangeulbada.domain.workbookset.dto.WorkbookAddRequest;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookRequestDTO;
+import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.entity.Question;
 import com.hangeulbada.domain.workbookset.exception.NotAuthorizedException;
@@ -93,7 +94,7 @@ public class WorkbookServiceImpl implements WorkbookService {
     }
 
     @Override
-    public WorkbookDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
+    public WorkbookIdResponseDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
         Workbook w = workbookRepository.findById(workbookAddRequest.getWorkbookId())
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookAddRequest.getWorkbookId()));
         WorkbookDto newWorkbookDto = WorkbookDto.builder()
@@ -107,7 +108,7 @@ public class WorkbookServiceImpl implements WorkbookService {
                 .endDate(workbookAddRequest.getEndDate())
                 .build();
         Workbook workbookAdded = workbookRepository.save(mapper.map(newWorkbookDto, Workbook.class));
-        return mapper.map(workbookAdded, WorkbookDto.class);
+        return new WorkbookIdResponseDto(workbookAdded.getId());
     }
 
 
