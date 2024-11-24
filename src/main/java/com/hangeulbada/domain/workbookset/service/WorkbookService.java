@@ -14,7 +14,7 @@ public interface WorkbookService {
     List<WorkbookDto> getWorkbookList(String teacherId); // 추후 pagination 추가
     WorkbookDto getWorkbookById(String workbookId);
     void deleteWorkbook(String teacherId, String workbookId);
-    WorkbookDto addWorkbook(WorkbookAddRequest workbookAddRequest,String teacherId);
+    WorkbookIdResponseDto addWorkbook(WorkbookAddRequest workbookAddRequest,String teacherId);
 
     List<WorkbookDto> getGroupWorkbooks(String groupId);
     WorkbookDto createGroupWorkbook(String teacherId, String groupId, WorkbookRequestDTO workbookDto);

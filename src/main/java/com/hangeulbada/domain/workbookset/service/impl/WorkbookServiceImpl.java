@@ -95,7 +95,7 @@ public class WorkbookServiceImpl implements WorkbookService {
     }
 
     @Override
-    public WorkbookDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
+    public WorkbookIdResponseDto addWorkbook(WorkbookAddRequest workbookAddRequest, String teacherId) {
         Workbook w = workbookRepository.findById(workbookAddRequest.getWorkbookId())
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookAddRequest.getWorkbookId()));
         WorkbookDto newWorkbookDto = WorkbookDto.builder()
@@ -109,7 +109,7 @@ public class WorkbookServiceImpl implements WorkbookService {
                 .endDate(workbookAddRequest.getEndDate())
                 .build();
         Workbook workbookAdded = workbookRepository.save(mapper.map(newWorkbookDto, Workbook.class));
-        return mapper.map(workbookAdded, WorkbookDto.class);
+        return new WorkbookIdResponseDto(workbookAdded.getId());
     }
 
 
