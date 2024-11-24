@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.assignment.dto;
+package com.hangeulbada.domain.workbookset.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
