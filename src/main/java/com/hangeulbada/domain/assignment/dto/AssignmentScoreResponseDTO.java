@@ -1,17 +1,14 @@
 package com.hangeulbada.domain.assignment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.Map;
-@Getter
-@Setter
+import java.util.List;
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Schema(description = "AssignmentScoreResponseDTO")
 public class AssignmentScoreResponseDTO {
-    private Map<String, QuestionAnalysisDto> response;
+    private List<QuestionAnalysisDto> answers;
 }

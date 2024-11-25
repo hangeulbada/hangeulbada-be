@@ -15,6 +15,6 @@ public class SubmitDTO {
     private String workbookId;
     private String workbookTitle;
     private String assignmentId;
-    private String score;
+    private Integer score;
     private String submitDate;
 }
