@@ -31,7 +31,6 @@ public class AssignmentService {
     private final ApiService apiService;
     private final ModelMapper mapper;
     private final IncorrectAnswerTagRepository incorrectAnswerTagRepository;
-    private final ModelMapper modelMapper;
 
     public SpecificAssignmentDTO getAssignment(String studentId, String workbookId) {
         Assignment assignment = assignmentRepository.findLatestByStudentIdAndWorkbookId(studentId, workbookId);
@@ -86,7 +85,7 @@ public class AssignmentService {
         }
 
         //Assignment 저장
-        Assignment newAssignment = modelMapper.map(assignmentDto, Assignment.class);
+        Assignment newAssignment = mapper.map(assignmentDto, Assignment.class);
         newAssignment.setStudentId(studentId);
         newAssignment.setWorkbookId(wId);
         newAssignment.setQuestions(questions);

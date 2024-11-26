@@ -1,9 +1,11 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
-import com.hangeulbada.domain.workbookset.dto.QuestionDto;
-import com.hangeulbada.domain.workbookset.dto.TagCountDto;
+import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Tag;
+import com.hangeulbada.domain.workbookset.entity.Workbook;
+import com.hangeulbada.domain.workbookset.exception.NoIncorrectsException;
 import com.hangeulbada.domain.workbookset.repository.IncorrectAnswerTagRepository;
+import com.hangeulbada.domain.workbookset.repository.QuestionIdsDTO;
 import com.hangeulbada.domain.workbookset.service.IncorrectAnswerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +40,27 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
     }
 
     @Override
-    public List<QuestionDto> getIncorrectsByTag(String studentId, Tag tag) {
+    public List<String> getIncorrectsByTag(String studentId, TagRequestDto tagRequestDto) {
+        QuestionIdsDTO questionIdsDTO = incorrectsRepository.findQuestionIdsByStudentIdAndTag(studentId, tagRequestDto.getTagName());
+        if (questionIdsDTO == null) {
+            throw new NoIncorrectsException(tagRequestDto.getTagName(), studentId);
+        }
 //        List<QuestionDto> incorrects = incorrectsRepository.findIncorrectAnswerTagByStudentIdAndTag(studentId, tag);
 //        createIncorrectsWorkbook(studentId,incorrects);
-        return List.of();
+        return questionIdsDTO.getQuestionIds();
+    }
+
+    public WorkbookIdResponseDto createIncorrectsWorkbook(String studentId, TagRequestDto tagRequestDto){
+        // 오답 태그로 이뤄진 문장 가져오기
+        List<String> questionIds = getIncorrectsByTag(studentId, tagRequestDto);
+        // 오답 그룹 있으면 거기에, 없으면 새로 생성
+
+        // 문제집 생성 후 문제들 등록, 저장
+        Workbook workbook = Workbook.builder().build();
+        // 그룹에 문제집 등록
+
+        // 문제집 id 리턴
+        return mapper.map(workbook, WorkbookIdResponseDto.class);
     }
 
     public void createIncorrectsWorkbook(String studentId, List<QuestionDto> incorrects) {
