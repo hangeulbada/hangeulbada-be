@@ -114,14 +114,14 @@ public class GroupController {
     @DeleteMapping("/student/group/{groupId}")
     @Operation(summary = "클래스 탈퇴", description = "학생이 클래스를 탈퇴합니다.")
     @ApiResponse(responseCode = "204", description = "클래스 탈퇴 성공")
-    public void leaveGroup(@PathVariable String groupId, Principal principal){
+    public void leaveGroup(@PathVariable(name="groupId") String groupId, Principal principal){
         groupService.leaveGroup(groupId, principal.getName());
     }
     @StudentTag
     @GetMapping("/student/group")
     @Operation(summary = "학생의 클래스 조회", description = "학생이 참여한 클래스를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
-    public ResponseEntity<?> getAttendGroup(Principal principal){
+    public ResponseEntity<List<GroupAttendResponse>> getAttendGroup(Principal principal){
         List<GroupAttendResponse> group = groupService.getAttendGroup(principal.getName());
         return ResponseEntity.ok(group);
     }
@@ -130,7 +130,7 @@ public class GroupController {
     @GetMapping("/student/group/{groupId}/assignment")
     @Operation(summary = "학생이 클래스에서 푼 문제집", description = "학생이 클래스에서 푼 문제집을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
-    public ResponseEntity<?> getAssignment(@PathVariable String groupId, Principal principal){
+    public ResponseEntity<List<GroupAssignmentDTO>> getAssignment(@PathVariable(name="groupId") String groupId, Principal principal){
         List<GroupAssignmentDTO> assignment = userService.getGroupAssignment(groupId, principal.getName());
         return ResponseEntity.ok(assignment);
     }
