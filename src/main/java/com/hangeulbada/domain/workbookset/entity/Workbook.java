@@ -20,7 +20,8 @@ public class Workbook{
     private String teacherId;
     private String title;
     private String description;
-    private Integer difficulty;
+    @Builder.Default
+    private Integer difficulty = 0;
     private int questionNum;
     @Builder.Default
     private List<String> questionIds = new ArrayList<>();
