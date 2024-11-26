@@ -1,6 +1,6 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
-import com.hangeulbada.domain.externalapi.service.ApiServiceImpl;
+import com.hangeulbada.domain.externalapi.service.ApiService;
 import com.hangeulbada.domain.tts.service.TTSService;
 import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Question;
@@ -31,7 +31,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final WorkbookRepository workbookRepository;
     private final ModelMapper mapper;
     private final TTSService ttsService;
-    private final ApiServiceImpl apiService;
+    private final ApiService apiService;
     private final WorkbookService workbookService;
 
     @Override

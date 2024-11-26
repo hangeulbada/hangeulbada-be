@@ -1,27 +1,24 @@
 package com.hangeulbada.domain.assignment.service;
 
-import com.hangeulbada.domain.assignment.dto.AssignmentDTO;
-import com.hangeulbada.domain.assignment.dto.ScoreDTO;
-import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
-import com.hangeulbada.domain.assignment.dto.SpecificCompareDTO;
+import com.hangeulbada.domain.assignment.dto.*;
 import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
+import com.hangeulbada.domain.externalapi.service.ApiService;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
-import com.hangeulbada.domain.ocr.service.OCRService;
 import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.dto.QuestionResponseDto;
+import com.hangeulbada.domain.workbookset.entity.IncorrectAnswerTag;
+import com.hangeulbada.domain.workbookset.repository.IncorrectAnswerTagRepository;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -31,111 +28,94 @@ public class AssignmentService {
     private final QuestionService questionService;
     private final WorkbookService workbookService;
     private final UserService userService;
-    private final OCRService ocrService;
+    private final ApiService apiService;
     private final ModelMapper mapper;
+    private final IncorrectAnswerTagRepository incorrectAnswerTagRepository;
+    private final ModelMapper modelMapper;
 
-    public SpecificAssignmentDTO getAssignment(String studentId, String workbookId){
+    public SpecificAssignmentDTO getAssignment(String studentId, String workbookId) {
         Assignment assignment = assignmentRepository.findLatestByStudentIdAndWorkbookId(studentId, workbookId);
-        List<String> questionIds = workbookService.getQuestionIdsByWorkbookId(workbookId);
-
-        List<SpecificCompareDTO> compareDTOS = new ArrayList<>();
-
-        for (int i=0; i<questionIds.size(); i++){
-            String questionContent = questionService.getQuestionById(workbookId, questionIds.get(i)).getContent() .replace('.',' ').strip()  ;
-            String studentAnswer = assignment.getContent().get(i+1);
-            compareDTOS.add(SpecificCompareDTO.builder()
-                    .number(String.valueOf(i+1))
-                    .answer(questionContent)
-                    .studentAnswer(studentAnswer)
-                    .isCorrect(questionContent.equals(studentAnswer))
-                    .build());
+        List<String> questions = new ArrayList<>();
+        for (QuestionResponseDto q : questionService.getQuestionsByWorkbookId(workbookId)) {
+            questions.add(q.getContent());
         }
-
-
-        return SpecificAssignmentDTO.builder()
-                .imgS3Url(assignment.getImgS3Url())
-                .score(assignment.getScore())
-                .answers(compareDTOS)
-                .studentName(userService.getUserById(studentId).getName())
-                .build();
+        SpecificAssignmentDTO specificAssignmentDTO = mapper.map(assignment, SpecificAssignmentDTO.class);
+        specificAssignmentDTO.setStudentName((userService.getUserById(studentId).getName()));
+        specificAssignmentDTO.setQuestions(questions);
+        specificAssignmentDTO.setImgS3Url(assignment.getImgS3Url());
+        specificAssignmentDTO.setScore(assignment.getScore());
+        return specificAssignmentDTO;
     }
+
 
     public List<ScoreDTO> requestOCR(OCRRequest ocrRequest, String studentId){
-        List<String> ocrText = ocrService.startOCR(ocrRequest.getImageName());
-        List<ScoreDTO> scores = this.getScores(ocrRequest.getWorkbookId(), ocrText);
-        log.info("ocrText: {}", ocrText);
-        log.info("scores: {}", scores);
-        this.saveScores(ocrRequest.getImageName(), studentId, ocrRequest.getWorkbookId(), scores, ocrText);
-        return scores;
+        String wId = ocrRequest.getWorkbookId();
+        List<String> questionIds = workbookService.getQuestionIdsByWorkbookId(wId);
+
+        Map<Integer, String> qIdMap = new HashMap<>();
+        Map<String, String> workbook = new HashMap<>();
+        List<String> questions = new ArrayList<>();
+        Integer i=1;
+        for(String qId : questionIds){
+            String qContent = questionService.getQuestionById(wId,qId).getContent();
+            workbook.put(i.toString(), qContent);
+            questions.add(qContent);
+            qIdMap.put(i,qId);
+            i++;
+        }
+
+        AssignmentScoreRequestDto scoreRequestDto =
+                new AssignmentScoreRequestDto().builder()
+                        .workbook(workbook)
+                        .answer(ocrRequest.getImageName())
+                        .build();
+        // OCR 요청
+        AssignmentScoreResponseDTO assignmentDto = apiService.postAssignmentScore(scoreRequestDto);
+
+        if (assignmentDto == null) {
+            log.error("postAssignmentScore returned null for request: {}", scoreRequestDto);
+            throw new IllegalStateException("Failed to retrieve assignment score. API returned null.");
+        }
+        List<ScoreDTO> scoreDTOS = new ArrayList<>();
+        int score=0;
+        for(QuestionAnalysisDto qAnalysis: assignmentDto.getAnswers()){
+            scoreDTOS.add(
+                    ScoreDTO.builder().number(qAnalysis.getNum()).simillarity(qAnalysis.getSimillarity()).build()
+            );
+            if (qAnalysis.getSimillarity()==100) score++;
+        }
+
+        //Assignment 저장
+        Assignment newAssignment = modelMapper.map(assignmentDto, Assignment.class);
+        newAssignment.setStudentId(studentId);
+        newAssignment.setWorkbookId(wId);
+        newAssignment.setQuestions(questions);
+        newAssignment.setScore(score);
+        newAssignment.setSubmitDate(LocalDateTime.now());
+        newAssignment.setImgS3Url(ocrRequest.getImageName());
+        assignmentRepository.save(newAssignment);
+
+        //오답 태그 저장
+        saveIncorrectTag(assignmentDto, qIdMap, studentId);
+
+        return scoreDTOS;
     }
-    public void saveScores(String imgS3url, String studentId, String workbookId, List<ScoreDTO> scores, List<String> ocrText){
-        Map<Integer, String> content = new HashMap<>();
-        for (String text : ocrText) {
-            String[] parts = text.split("\\.", 2);
-            if (parts.length == 2) {
-                try {
-                    Integer number = Integer.parseInt(parts[0].trim());
-                    String contentText = parts[1].trim();
-                    content.put(number, contentText);
-                } catch (NumberFormatException e) {
-                    log.error("Error parsing question number: '{}'", parts[0], e);
+
+
+    @Async
+    public void saveIncorrectTag(AssignmentScoreResponseDTO assignmentDto, Map<Integer, String> qIdMap, String studentId){
+        // ocr 작업 후 오답의 문제, 태그 등 저장
+        List<QuestionAnalysisDto> analysisDtos = assignmentDto.getAnswers();
+        for(QuestionAnalysisDto dto: analysisDtos){
+            if(dto.getSimillarity()<100){
+                for(AnalysisDetailDto analysis: dto.getAnalysis()){
+                    for(String pronounce : analysis.getPronounce()){
+                        incorrectAnswerTagRepository.save(new IncorrectAnswerTag().builder()
+                                        .studentId(studentId).tag(pronounce).questionId(qIdMap.get(dto.getNum()))
+                                .build());
+                    }
                 }
-            } else {
-                log.warn("Unexpected OCR text format: '{}'", text);
             }
         }
-        long totalScore = 100;
-        int questionCount = workbookService.getQuestionIdsByWorkbookId(workbookId).size();
-        long scorePerQuestion = !scores.isEmpty() ? 100 / questionCount : 0;
-
-        if (scores.size()!=questionCount){
-            totalScore-=scorePerQuestion*(questionCount-scores.size());
-        }
-        for (ScoreDTO score : scores) {
-            if (!score.isCorrect()) {
-                totalScore -= scorePerQuestion;
-            }
-        }
-
-        AssignmentDTO assignmentDTO = AssignmentDTO.builder()
-                .imgS3Url(imgS3url)
-                .studentId(studentId)
-                .workbookId(workbookId)
-                .content(content)
-                .score(String.valueOf(totalScore))
-                .submitDate(LocalDateTime.now())
-                .build();
-
-        assignmentRepository.save(mapper.map(assignmentDTO, Assignment.class));
-    }
-
-    public List<ScoreDTO> getScores(String workbookId, List<String> ocrText) {
-        List<QuestionResponseDto> questionDtos = questionService.getQuestionsByWorkbookId(workbookId);
-        List<String> questions = questionDtos.stream().map(QuestionResponseDto::getContent).toList();
-        List<ScoreDTO> scores = new ArrayList<>();
-
-        for (int i = 0; i < questions.size() && i < ocrText.size(); i++) {
-            String text = ocrText.get(i);
-            String[] parts = text.split("\\.", 2);
-            if (parts.length == 2) {
-                try {
-                    int number = Integer.parseInt(parts[0].trim());
-                    String content = parts[1].strip();
-
-                    log.info("content"+content+ "question"+questions.get(number-1).replace('.',' ').strip());
-
-                    boolean isCorrect = questions.get(number-1).replace('.',' ').strip().equals(content);
-                    scores.add(ScoreDTO.builder()
-                            .number(number)
-                            .isCorrect(isCorrect)
-                            .build());
-                } catch (NumberFormatException e) {
-                    log.error("Error parsing question number: '{}'", parts[0], e);
-                }
-            } else {
-                log.warn("Unexpected OCR text format: '{}'", text);
-            }
-        }
-        return scores;
     }
 }

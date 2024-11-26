@@ -32,8 +32,7 @@ public class AssignmentController {
             OCRRequest ocrRequest,
             Principal principal
     ) {
-        List<ScoreDTO> scoreDTOList = assignmentService.requestOCR(ocrRequest, principal.getName());
-        return ResponseEntity.ok(scoreDTOList);
+        return ResponseEntity.ok(assignmentService.requestOCR(ocrRequest, principal.getName()));
     }
 
     @StudentTag

@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 @Builder
-@Schema(description = "문항별 점수")
+@Schema(description = "문항별 유사도")
 public class ScoreDTO {
     @Schema(description = "문항 번호", example = "1")
-    int number;
-    @Schema(description = "문항 정답 여부", example = "true")
-    boolean isCorrect;
+    Integer number;
+    @Schema(description = "문항 유사도", example = "80")
+    Integer simillarity;
 }
