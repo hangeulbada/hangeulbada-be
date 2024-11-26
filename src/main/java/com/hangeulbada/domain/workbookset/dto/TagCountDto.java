@@ -1,14 +1,13 @@
 package com.hangeulbada.domain.workbookset.dto;
 
-import com.hangeulbada.domain.workbookset.entity.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class TagCountDto {
-    private Tag tagId;
+    private String tag;
     private long count;
 }
