@@ -44,14 +44,12 @@ public class IncorrectAnswerController {
         return ResponseEntity.ok(incorrectAnswerService.createIncorrectsWorkbook(principal.getName(),tagRequestDto));
     }
 
-    @StudentTag
     @GetMapping("/group")
     @Operation(summary = "오답 그룹", description = "오답 그룹")
     public ResponseEntity<IncorrectsGroupDTO> getMyReviewGroup(Principal principal){
         return ResponseEntity.ok(incorrectAnswerService.getMyReviewGroup(principal.getName()));
     }
 
-    @StudentTag
     @GetMapping("/group/workbooks")
     @Operation(summary = "유저의 모든 오답 문제집", description = "모든 오답 문제집을 조회합니다.")
     public ResponseEntity<List<WorkbookDto>> getMyReviewWorkbooks(Principal principal){
