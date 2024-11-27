@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.assignment.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
+import com.hangeulbada.domain.assignment.dto.AssignmentSummaryDto;
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
 import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
@@ -54,6 +55,15 @@ public class AssignmentController {
     @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
     public ResponseEntity<List<GroupAssignmentDTO>> getAssignment(Principal principal){
         List<GroupAssignmentDTO> assignment = assignmentService.getUserAssignments(principal.getName());
+        return ResponseEntity.ok(assignment);
+    }
+
+    @StudentTag
+    @GetMapping("/student/workbook/{workbookId}/assignment")
+    @Operation(summary = "학생(사용자)이 특정 문제집에 낸 답안", description = "유저의 해당 workbook 모든 답안들을 가져옵니다")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공")
+    public ResponseEntity<List<AssignmentSummaryDto>> getAssignment(@PathVariable(value = "workbookId")String workbookId, Principal principal){
+        List<AssignmentSummaryDto> assignment = assignmentService.getUserAssignmentsSummary(workbookId, principal.getName());
         return ResponseEntity.ok(assignment);
     }
 }

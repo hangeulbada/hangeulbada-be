@@ -122,4 +122,8 @@ public class AssignmentService {
     public List<GroupAssignmentDTO> getUserAssignments(String studentId){
         return assignmentRepository.findGroupAssignmentsByStudentId(studentId);
     }
+
+    public List<AssignmentSummaryDto> getUserAssignmentsSummary(String workbookId, String studentId){
+        return assignmentRepository.getWorkbookAssignment(studentId, workbookId);
+    }
 }
