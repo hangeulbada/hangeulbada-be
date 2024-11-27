@@ -19,13 +19,13 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/assignment")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @StudentTag
-    @PostMapping("/submit")
+    @PostMapping("/assignment/submit")
     @Operation(summary="OCR 요청", description="OCR 요청 전송")
     @ApiResponse(responseCode = "200", description = "OCR 후 문항별 점수 반환")
     public ResponseEntity<List<ScoreDTO>> submit(
@@ -37,7 +37,7 @@ public class AssignmentController {
     }
 
     @StudentTag
-    @GetMapping("/{workbookId}/{studentId}")
+    @GetMapping("/assignment/{workbookId}/{studentId}")
     @Operation(summary="문제집 답안 조회", description="문제집의 학생 답안을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "문제집 답안 조회 성공")
     public ResponseEntity<SpecificAssignmentDTO> getAssignment(
@@ -49,7 +49,7 @@ public class AssignmentController {
     }
 
     @StudentTag
-    @GetMapping("/student/all")
+    @GetMapping("/student/assignment")
     @Operation(summary = "학생이 푼 문제집", description = "학생이 푼 모든 문제집을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
     public ResponseEntity<List<GroupAssignmentDTO>> getAssignment(Principal principal){
