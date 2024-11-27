@@ -126,12 +126,4 @@ public class GroupController {
         return ResponseEntity.ok(group);
     }
 
-    @StudentTag
-    @GetMapping("/student/group/{groupId}/assignment")
-    @Operation(summary = "학생이 클래스에서 푼 문제집", description = "학생이 클래스에서 푼 문제집을 조회합니다.")
-    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
-    public ResponseEntity<List<GroupAssignmentDTO>> getAssignment(@PathVariable(name="groupId") String groupId, Principal principal){
-        List<GroupAssignmentDTO> assignment = userService.getGroupAssignment(groupId, principal.getName());
-        return ResponseEntity.ok(assignment);
-    }
 }

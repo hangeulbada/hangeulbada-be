@@ -4,6 +4,7 @@ import com.hangeulbada.domain.assignment.dto.*;
 import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
 import com.hangeulbada.domain.externalapi.service.ApiService;
+import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.dto.QuestionResponseDto;
@@ -116,5 +117,9 @@ public class AssignmentService {
                 }
             }
         }
+    }
+
+    public List<GroupAssignmentDTO> getUserAssignments(String studentId){
+        return assignmentRepository.findGroupAssignmentsByStudentId(studentId);
     }
 }

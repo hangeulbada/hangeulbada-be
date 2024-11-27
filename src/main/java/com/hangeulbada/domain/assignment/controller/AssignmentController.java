@@ -4,6 +4,7 @@ import com.hangeulbada.domain.annotation.StudentTag;
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
 import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
+import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,5 +46,14 @@ public class AssignmentController {
     ) {
         SpecificAssignmentDTO assignmentDTO = assignmentService.getAssignment(studentId, workbookId);
         return ResponseEntity.ok(assignmentDTO);
+    }
+
+    @StudentTag
+    @GetMapping("/student/all")
+    @Operation(summary = "학생이 푼 문제집", description = "학생이 푼 모든 문제집을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공", content = @io.swagger.v3.oas.annotations.media.Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GroupAssignmentDTO.class)))
+    public ResponseEntity<List<GroupAssignmentDTO>> getAssignment(Principal principal){
+        List<GroupAssignmentDTO> assignment = assignmentService.getUserAssignments(principal.getName());
+        return ResponseEntity.ok(assignment);
     }
 }
