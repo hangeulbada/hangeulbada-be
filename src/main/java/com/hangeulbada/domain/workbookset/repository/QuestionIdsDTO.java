@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -18,5 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionIdsDTO {
     @Field("questionIds")
-    private List<String> questionIds;
+    @Builder.Default
+    private List<String> questionIds = new ArrayList<>();
 }
