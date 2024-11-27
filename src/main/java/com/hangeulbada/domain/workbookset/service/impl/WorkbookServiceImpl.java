@@ -36,7 +36,7 @@ public class WorkbookServiceImpl implements WorkbookService {
     @Override
     public void updateWorkbookDifficulty(String workbookId) {
         int calculatedDiff = (int)Math.round(calculateWorkbookDifficulty(workbookId));
-        Workbook workbook = workbookRepository.findById(workbookId).get();
+        Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
         workbook.setDifficulty(calculatedDiff);
         workbookRepository.save(workbook);
     }

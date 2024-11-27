@@ -39,4 +39,9 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     public ResponseEntity<Object> handleTtsException(TtsException ex){
         return new ResponseEntity<>(new ExceptionResponse(new Date(),ex.getStatus(), ex.getMessage()), ex.getStatus());
     }
+
+    @ExceptionHandler(value = { NoIncorrectsException.class})
+    public ResponseEntity<Object> handleIncorrectsException(NoIncorrectsException ex){
+        return new ResponseEntity<>(new ExceptionResponse(new Date(),ex.getStatus(), ex.getMessage()), ex.getStatus());
+    }
 }
