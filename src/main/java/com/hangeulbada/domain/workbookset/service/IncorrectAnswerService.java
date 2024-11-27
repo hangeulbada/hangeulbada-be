@@ -3,6 +3,7 @@ package com.hangeulbada.domain.workbookset.service;
 import com.hangeulbada.domain.group.dto.IncorrectsGroupDTO;
 import com.hangeulbada.domain.workbookset.dto.TagCountDto;
 import com.hangeulbada.domain.workbookset.dto.TagRequestDto;
+import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
 import com.hangeulbada.domain.workbookset.repository.QuestionIdsDTO;
 
@@ -19,4 +20,6 @@ public interface IncorrectAnswerService {
     WorkbookIdResponseDto createIncorrectsWorkbook(String studentId, TagRequestDto tagRequestDto);
     //오답 그룹 리턴
     IncorrectsGroupDTO getMyReviewGroup(String studentId);
+    //모든 오답 문제집 리스트
+    List<WorkbookDto> getReviewWorkbooks(String studentId);
 }
