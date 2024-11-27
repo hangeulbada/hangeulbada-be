@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface WorkbookRepository extends MongoRepository<Workbook, String> {
     List<Workbook> findByTeacherId(String teacherId);
+    List<Workbook> findByIdIn(List<String> ids);
 }

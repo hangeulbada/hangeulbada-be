@@ -122,4 +122,14 @@ public class AssignmentService {
     public List<GroupAssignmentDTO> getUserAssignments(String studentId){
         return assignmentRepository.findGroupAssignmentsByStudentId(studentId);
     }
+
+    public List<AssignmentSummaryDto> getUserAssignmentsSummary(String workbookId, String studentId){
+        return assignmentRepository.getWorkbookAssignment(studentId, workbookId);
+    }
+
+    public SpecificAssignmentDTO getAssignmentById(String id, String studentId){
+        SpecificAssignmentDTO assignmentDTO = mapper.map(assignmentRepository.findAssignmentById(id), SpecificAssignmentDTO.class);
+        assignmentDTO.setStudentName(userService.getUserById(studentId).getName());
+        return assignmentDTO;
+    }
 }

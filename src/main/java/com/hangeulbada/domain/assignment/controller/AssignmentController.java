@@ -1,6 +1,7 @@
 package com.hangeulbada.domain.assignment.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
+import com.hangeulbada.domain.assignment.dto.AssignmentSummaryDto;
 import com.hangeulbada.domain.assignment.dto.ScoreDTO;
 import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
@@ -56,4 +57,21 @@ public class AssignmentController {
         List<GroupAssignmentDTO> assignment = assignmentService.getUserAssignments(principal.getName());
         return ResponseEntity.ok(assignment);
     }
+
+    @StudentTag
+    @GetMapping("/student/workbook/{workbookId}/assignment")
+    @Operation(summary = "학생(사용자)이 특정 문제집에 낸 답안", description = "유저의 해당 workbook 모든 답안들을 가져옵니다")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공")
+    public ResponseEntity<List<AssignmentSummaryDto>> getAssignment(@PathVariable(value = "workbookId")String workbookId, Principal principal){
+        List<AssignmentSummaryDto> assignment = assignmentService.getUserAssignmentsSummary(workbookId, principal.getName());
+        return ResponseEntity.ok(assignment);
+    }
+    @StudentTag
+    @GetMapping("/student/assignment/{assignmentId}")
+    @Operation(summary = "답안 확인", description = "답안을 확인합니다")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공")
+    public ResponseEntity<SpecificAssignmentDTO> getSpecificAssignment(@PathVariable(value = "assignmentId")String assignmentId, Principal principal){
+        return ResponseEntity.ok(assignmentService.getAssignmentById(assignmentId, principal.getName()));
+    }
+
 }

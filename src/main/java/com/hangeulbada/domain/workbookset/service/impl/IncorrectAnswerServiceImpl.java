@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -99,4 +100,21 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
         // 문제집 id 리턴
         return mapper.map(newWorkbook, WorkbookIdResponseDto.class);
     }
+
+    @Override
+    public IncorrectsGroupDTO getMyReviewGroup(String studentId) {
+        return groupService.getOrCreateReviewGroup(studentId);
+    }
+
+    @Override
+    public List<WorkbookDto> getReviewWorkbooks(String studentId) {
+        IncorrectsGroupDTO groupDto = groupService.getOrCreateReviewGroup(studentId);
+        List<Workbook> workbooks = workbookRepository.findByIdIn(groupDto.getWorkbookIds());
+        List<WorkbookDto> workbookDtos = workbooks.stream()
+                .map(workbook -> mapper.map(workbook, WorkbookDto.class)) // WorkbookDto 생성자 활용
+                .collect(Collectors.toList());
+
+        return workbookDtos;
+    }
+
 }

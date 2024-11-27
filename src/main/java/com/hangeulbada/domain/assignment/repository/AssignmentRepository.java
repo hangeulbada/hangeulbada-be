@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.assignment.repository;
 
+import com.hangeulbada.domain.assignment.dto.AssignmentSummaryDto;
 import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,17 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
 
     @Query("{}")
     List<Assignment> findByStudentIdAndWorkbookIdOrderByCreatedDateDesc(String studentId, String workbookId, Pageable pageable);
+
+    @Aggregation(pipeline = {
+            "{$match:  {'studentId':  ?0, 'workbookId':  ?1}}",
+            "{$addFields: {'workbookIdObj': {$toObjectId: '$workbookId'}}}",
+            "{$lookup: {from: 'Workbook', localField: 'workbookIdObj', foreignField: '_id', as: 'workbook_info'}}",
+            "{$unwind: '$workbook_info'}",
+            "{$project: {workbookId: 1, workbookTitle: '$workbook_info.title', assignmentId: '$_id', score: 1, submitDate: 1}}"
+    })
+    List<AssignmentSummaryDto> getWorkbookAssignment(String studentId, String workbookId);
+
+    Assignment findAssignmentById(String assignmentId);
 
     // 편의 메소드로 사용
     default Assignment findLatestByStudentIdAndWorkbookId(String studentId, String workbookId) {
