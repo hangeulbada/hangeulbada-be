@@ -72,6 +72,6 @@ jobs:
       - name: docker run new container
         run: sudo docker run --name bada-spring-server --rm -d -p 5943:5943 --env-file ~/bada-spring/.env ${{ secrets.DOCKER_USER }}/bada-spring
 
-      # # 4. 미사용 이미지를 정리합니다
-      # - name: delete old docker image
-      #   run: sudo docker system prune -f
+      # 4. 미사용 이미지를 정리합니다
+      - name: delete old docker image
+        run: sudo docker system prune -f
