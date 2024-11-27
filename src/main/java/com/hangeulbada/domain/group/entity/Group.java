@@ -1,15 +1,17 @@
 package com.hangeulbada.domain.group.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document("Group")
-@Getter
-@Setter
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Group{
     @Id
     private String id;
@@ -18,5 +20,6 @@ public class Group{
     private String teacherId;
     private String groupCode;
     private List<String> studentIds;
-    private List<String> workbookIds;
+    @Builder.Default
+    private List<String> workbookIds = new ArrayList<>();;
 }

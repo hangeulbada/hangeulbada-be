@@ -1,5 +1,9 @@
 package com.hangeulbada.domain.workbookset.service.impl;
 
+import com.hangeulbada.domain.group.dto.IncorrectsGroupDTO;
+import com.hangeulbada.domain.group.entity.Group;
+import com.hangeulbada.domain.group.repository.GroupRepository;
+import com.hangeulbada.domain.group.service.GroupService;
 import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
@@ -30,6 +34,8 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
     );
     private final UserService userService;
     private final WorkbookRepository workbookRepository;
+    private final GroupService groupService;
+    private final GroupRepository groupRepository;
 
     @Override
     public List<TagCountDto> countIncorrects(String studentId) {
@@ -83,8 +89,13 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
         workbookService.updateWorkbookDifficulty(newWorkbook.getId());
 
         // 오답 그룹 있으면 거기에, 없으면 새로 생성
+        IncorrectsGroupDTO groupdto = groupService.getOrCreateReviewGroup(studentId);
         // 그룹에 문제집 등록
-
+        Group group = mapper.map(groupdto, Group.class);
+        List<String> wIds = group.getWorkbookIds();
+        wIds.add(newWorkbook.getId());
+        group.setWorkbookIds(wIds);
+        groupRepository.save(group);
         // 문제집 id 리턴
         return mapper.map(newWorkbook, WorkbookIdResponseDto.class);
     }

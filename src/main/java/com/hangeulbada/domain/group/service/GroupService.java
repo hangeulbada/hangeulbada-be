@@ -4,12 +4,10 @@ import com.hangeulbada.domain.assignment.entity.Assignment;
 import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
 import com.hangeulbada.domain.auth.entity.User;
 import com.hangeulbada.domain.auth.repository.UserRepository;
-import com.hangeulbada.domain.group.dto.GroupAttendResponse;
-import com.hangeulbada.domain.group.dto.GroupDTO;
-import com.hangeulbada.domain.group.dto.GroupRequest;
-import com.hangeulbada.domain.group.dto.SubmitDTO;
+import com.hangeulbada.domain.group.dto.*;
 import com.hangeulbada.domain.group.entity.Group;
 import com.hangeulbada.domain.group.repository.GroupRepository;
+import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +25,11 @@ import java.util.stream.Collectors;
 public class GroupService{
     private final GroupRepository groupRepository;
     private final ModelMapper mapper;
-//    private final AssignmentService assignmentService;
     private final AssignmentRepository assignmentRepository;
     private final WorkbookRepository workbookRepository;
     private final UserRepository userRepository;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+    private final UserService userService;
 
     public boolean isValidRequest(String id, String groupId){
         log.info("id: "+id+" groupId: "+groupId);
@@ -164,5 +162,22 @@ public class GroupService{
                     .build();
 
         }).collect(Collectors.toList());
+    }
+
+    public IncorrectsGroupDTO getOrCreateReviewGroup(String studentId){
+        List<Group> incorrectOptional = groupRepository.findByTeacherIdAndGroupCodeIsNull(studentId);
+        if (incorrectOptional.isEmpty()){
+            // 그룹 새로 생성 후 리턴
+            String username = userService.getUserById(studentId).getName();
+            Group group = Group.builder()
+                    .groupName(username+"의 오답")
+                    .description(username+"의 오답 학습 클래스입니다.")
+                    .teacherId(studentId)
+                    .studentIds(new ArrayList<>(Collections.singletonList(studentId)))
+                    .build();
+            Group newGroup = groupRepository.save(group);
+            return mapper.map(newGroup, IncorrectsGroupDTO.class);
+        }
+        return mapper.map(incorrectOptional.get(0), IncorrectsGroupDTO.class);
     }
 }
