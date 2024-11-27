@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.workbookset.service;
 
+import com.hangeulbada.domain.group.dto.IncorrectsGroupDTO;
 import com.hangeulbada.domain.workbookset.dto.TagCountDto;
 import com.hangeulbada.domain.workbookset.dto.TagRequestDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
@@ -16,4 +17,6 @@ public interface IncorrectAnswerService {
     QuestionIdsDTO getIncorrectsByTag(String studentId, String tagName);
     //오답 문제집 생성
     WorkbookIdResponseDto createIncorrectsWorkbook(String studentId, TagRequestDto tagRequestDto);
+    //오답 그룹 리턴
+    IncorrectsGroupDTO getMyReviewGroup(String studentId);
 }

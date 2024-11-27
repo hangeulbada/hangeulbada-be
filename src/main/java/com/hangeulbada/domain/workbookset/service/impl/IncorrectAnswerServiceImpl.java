@@ -99,4 +99,10 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
         // 문제집 id 리턴
         return mapper.map(newWorkbook, WorkbookIdResponseDto.class);
     }
+
+    @Override
+    public IncorrectsGroupDTO getMyReviewGroup(String studentId) {
+        return groupService.getOrCreateReviewGroup(studentId);
+    }
+
 }

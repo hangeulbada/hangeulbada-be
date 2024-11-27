@@ -1,5 +1,7 @@
 package com.hangeulbada.domain.workbookset.controller;
 
+import com.hangeulbada.domain.annotation.StudentTag;
+import com.hangeulbada.domain.group.dto.IncorrectsGroupDTO;
 import com.hangeulbada.domain.workbookset.dto.TagCountDto;
 import com.hangeulbada.domain.workbookset.dto.TagRequestDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
@@ -39,5 +41,12 @@ public class IncorrectAnswerController {
     @Operation(summary = "오답 문제집 생성", description = "원하는 종류의 오답 문제집 생성")
     public ResponseEntity<WorkbookIdResponseDto> createIncorrectsWorkbook(@Valid @RequestBody TagRequestDto tagRequestDto, Principal principal){
         return ResponseEntity.ok(incorrectAnswerService.createIncorrectsWorkbook(principal.getName(),tagRequestDto));
+    }
+
+    @StudentTag
+    @GetMapping("/group")
+    @Operation(summary = "오답 그룹", description = "오답 그룹")
+    public ResponseEntity<IncorrectsGroupDTO> getMyReviewGroup(Principal principal){
+        return ResponseEntity.ok(incorrectAnswerService.getMyReviewGroup(principal.getName()));
     }
 }
