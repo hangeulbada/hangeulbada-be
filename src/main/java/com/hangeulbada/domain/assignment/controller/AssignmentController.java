@@ -66,4 +66,12 @@ public class AssignmentController {
         List<AssignmentSummaryDto> assignment = assignmentService.getUserAssignmentsSummary(workbookId, principal.getName());
         return ResponseEntity.ok(assignment);
     }
+    @StudentTag
+    @GetMapping("/student/assignment/{assignmentId}")
+    @Operation(summary = "답안 확인", description = "답안을 확인합니다")
+    @ApiResponse(responseCode = "200", description = "클래스 문제집 조회 성공")
+    public ResponseEntity<SpecificAssignmentDTO> getSpecificAssignment(@PathVariable(value = "assignmentId")String assignmentId, Principal principal){
+        return ResponseEntity.ok(assignmentService.getAssignmentById(assignmentId, principal.getName()));
+    }
+
 }

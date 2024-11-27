@@ -35,6 +35,8 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
     })
     List<AssignmentSummaryDto> getWorkbookAssignment(String studentId, String workbookId);
 
+    Assignment findAssignmentById(String assignmentId);
+
     // 편의 메소드로 사용
     default Assignment findLatestByStudentIdAndWorkbookId(String studentId, String workbookId) {
         return findByStudentIdAndWorkbookIdOrderByCreatedDateDesc(studentId, workbookId, PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "submitDate"))).stream().findFirst().orElse(null);
