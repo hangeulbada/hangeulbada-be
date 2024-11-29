@@ -5,7 +5,7 @@ import com.hangeulbada.domain.workbookset.dto.TagCountDto;
 import com.hangeulbada.domain.workbookset.dto.TagRequestDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookDto;
 import com.hangeulbada.domain.workbookset.dto.WorkbookIdResponseDto;
-import com.hangeulbada.domain.workbookset.repository.QuestionIdsDTO;
+import com.hangeulbada.domain.workbookset.dto.QuestionIdsDTO;
 
 import java.util.List;
 
@@ -22,4 +22,6 @@ public interface IncorrectAnswerService {
     IncorrectsGroupDTO getMyReviewGroup(String studentId);
     //모든 오답 문제집 리스트
     List<WorkbookDto> getReviewWorkbooks(String studentId);
+
+    void deleteRecordByQuestionId(String questionId);
 }

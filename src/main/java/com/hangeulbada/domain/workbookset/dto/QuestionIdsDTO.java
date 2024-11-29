@@ -1,4 +1,4 @@
-package com.hangeulbada.domain.workbookset.repository;
+package com.hangeulbada.domain.workbookset.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -1,5 +1,6 @@
 package com.hangeulbada.domain.workbookset.repository;
 
+import com.hangeulbada.domain.workbookset.dto.QuestionIdsDTO;
 import com.hangeulbada.domain.workbookset.entity.IncorrectAnswerTag;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,4 +19,6 @@ public interface IncorrectAnswerTagRepository extends MongoRepository<IncorrectA
                 "{$project: {questionIds: 1, _id: 0}}"
         })
         QuestionIdsDTO findQuestionIdsByStudentIdAndTag(String studentId, String tag);
+
+        void deleteAllByQuestionId(String questionId);
 }
