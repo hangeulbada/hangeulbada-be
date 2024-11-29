@@ -119,7 +119,7 @@ public class GroupController {
     }
     @StudentTag
     @GetMapping("/student/group")
-    @Operation(summary = "학생의 클래스 조회", description = "학생이 참여한 클래스를 조회합니다.")
+    @Operation(summary = "학생의 일반 클래스 조회", description = "학생이 참여한 클래스중 오답클래스를 제외하고 조회합니다.")
     @ApiResponse(responseCode = "200", description = "클래스 조회 성공")
     public ResponseEntity<List<GroupAttendResponse>> getAttendGroup(Principal principal){
         List<GroupAttendResponse> group = groupService.getAttendGroup(principal.getName());

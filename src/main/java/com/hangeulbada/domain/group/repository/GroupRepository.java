@@ -15,7 +15,7 @@ public interface GroupRepository extends MongoRepository<Group, String> {
 
     Optional<Group> findByGroupCode(String code);
 
-    List<Group> findByStudentIdsContaining(String studentId);
+    List<Group> findByStudentIdsContainingAndGroupCodeIsNotNull(String studentId);
 
     @Aggregation(pipeline = {
             "{ $match: { teacherId: ?0, groupCode: null } }"
