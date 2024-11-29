@@ -127,6 +127,22 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public WorkbookDto getAiQuestionsToCreate(String teacherId, String workbookId, AiGeneratedQuestionsDto questionsDto) {
+        Workbook w = workbookRepository.findById(workbookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
+        List<String> questionIds = new ArrayList<>();
+        for(QuestionContentResponseDto q : questionsDto.getQuestions()){
+            QuestionDto questionDto = QuestionDto.builder().teacherId(teacherId).content(q.getContent()).difficulty(questionsDto.getDifficulty()).tags(q.getTags()).audioFilePath(ttsService.tts(q.getContent())).build();
+            Question newQuestion = questionRepository.save(mapper.map(questionDto, Question.class));
+            questionIds.add(newQuestion.getId());
+        }
+        w.setQuestionIds(questionIds);
+        w.setDifficulty(questionsDto.getDifficulty());
+        workbookRepository.save(w);
+        return mapper.map(w, WorkbookDto.class);
+    }
+
+    @Override
     public WorkbookDto getAlreadyExistingQuestionToAdd(String teacherId, String workbookId, QuestionRequestListDto questionIds) {
         Workbook w = workbookRepository.findById(workbookId)
                 .orElseThrow(()-> new ResourceNotFoundException("Workbook","id", workbookId));
