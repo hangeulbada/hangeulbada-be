@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpecificCompareDTO {
-    String number;
-    String answer;
-    String studentAnswer;
-    boolean isCorrect;
+public class AssignmentSavedDto {
+    String id;
+    List<ScoreDTO> scoreDtoList;
 }

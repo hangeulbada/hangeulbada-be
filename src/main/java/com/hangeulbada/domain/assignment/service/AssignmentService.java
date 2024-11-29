@@ -43,7 +43,7 @@ public class AssignmentService {
     }
 
 
-    public List<ScoreDTO> requestOCR(OCRRequest ocrRequest, String studentId){
+    public AssignmentSavedDto requestOCR(OCRRequest ocrRequest, String studentId){
         String wId = ocrRequest.getWorkbookId();
         List<String> questionIds = workbookService.getQuestionIdsByWorkbookId(wId);
 
@@ -92,12 +92,11 @@ public class AssignmentService {
         for(AssignmentContent content: newAssignment.getAnswers()){
             content.setQuestionFull(questions.get(idx++));
         }
-        assignmentRepository.save(newAssignment);
+        Assignment savedAssignment = assignmentRepository.save(newAssignment);
 
         //오답 태그 저장
         saveIncorrectTag(assignmentDto, qIdMap, studentId);
-
-        return scoreDTOS;
+        return AssignmentSavedDto.builder().id(savedAssignment.getId()).scoreDtoList(scoreDTOS).build();
     }
 
 

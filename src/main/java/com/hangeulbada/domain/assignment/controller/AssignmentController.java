@@ -1,8 +1,8 @@
 package com.hangeulbada.domain.assignment.controller;
 
 import com.hangeulbada.domain.annotation.StudentTag;
+import com.hangeulbada.domain.assignment.dto.AssignmentSavedDto;
 import com.hangeulbada.domain.assignment.dto.AssignmentSummaryDto;
-import com.hangeulbada.domain.assignment.dto.ScoreDTO;
 import com.hangeulbada.domain.assignment.dto.SpecificAssignmentDTO;
 import com.hangeulbada.domain.assignment.service.AssignmentService;
 import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
@@ -29,7 +29,7 @@ public class AssignmentController {
     @PostMapping("/assignment/submit")
     @Operation(summary="OCR 요청", description="OCR 요청 전송")
     @ApiResponse(responseCode = "200", description = "OCR 후 문항별 점수 반환")
-    public ResponseEntity<List<ScoreDTO>> submit(
+    public ResponseEntity<AssignmentSavedDto> submit(
             @RequestBody @Parameter(description = "OCR 요청 데이터", required = true, content = @Content(schema = @Schema(implementation = OCRRequest.class)))
             OCRRequest ocrRequest,
             Principal principal
