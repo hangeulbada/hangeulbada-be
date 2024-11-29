@@ -15,7 +15,6 @@ import java.util.List;
 @Schema(description = "SpecificAssignmentDTO")
 public class SpecificAssignmentDTO {
     private String studentName;
-    private List<String> questions; // 문제들
     private List<AssignmentContentDto> answers; // 답안 관련
     private Integer score; //맞은 개수
     private String imgS3Url;
@@ -28,6 +27,7 @@ public class SpecificAssignmentDTO {
 class AssignmentContentDto{
     private Integer num; // 답안 번호
     private Integer simillarity; // 유사도
+    private String questionFull; //정답 문장
     private String ocr_answer;
     private List<AnalysisDto> analysis;
 }

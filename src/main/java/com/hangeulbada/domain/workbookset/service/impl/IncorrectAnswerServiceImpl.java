@@ -9,7 +9,7 @@ import com.hangeulbada.domain.workbookset.dto.*;
 import com.hangeulbada.domain.workbookset.entity.Workbook;
 import com.hangeulbada.domain.workbookset.exception.NoIncorrectsException;
 import com.hangeulbada.domain.workbookset.repository.IncorrectAnswerTagRepository;
-import com.hangeulbada.domain.workbookset.repository.QuestionIdsDTO;
+import com.hangeulbada.domain.workbookset.dto.QuestionIdsDTO;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
 import com.hangeulbada.domain.workbookset.service.IncorrectAnswerService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,6 +38,7 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
     private final WorkbookRepository workbookRepository;
     private final GroupService groupService;
     private final GroupRepository groupRepository;
+    private final IncorrectAnswerTagRepository incorrectAnswerTagRepository;
 
     @Override
     public List<TagCountDto> countIncorrects(String studentId) {
@@ -71,6 +73,7 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
         return questionIdsDTO;
     }
 
+    @Transactional
     @Override
     public WorkbookIdResponseDto createIncorrectsWorkbook(String studentId, TagRequestDto tagRequestDto){
         // 오답 태그로 이뤄진 문장 가져오기
@@ -115,6 +118,12 @@ public class IncorrectAnswerServiceImpl implements IncorrectAnswerService {
                 .collect(Collectors.toList());
 
         return workbookDtos;
+    }
+
+    @Transactional
+    @Override
+    public void deleteRecordByQuestionId(String questionId) {
+        incorrectAnswerTagRepository.deleteAllByQuestionId(questionId);
     }
 
 }

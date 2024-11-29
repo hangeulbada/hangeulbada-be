@@ -2,12 +2,12 @@ package com.hangeulbada.domain.assignment.service;
 
 import com.hangeulbada.domain.assignment.dto.*;
 import com.hangeulbada.domain.assignment.entity.Assignment;
+import com.hangeulbada.domain.assignment.entity.AssignmentContent;
 import com.hangeulbada.domain.assignment.repository.AssignmentRepository;
 import com.hangeulbada.domain.externalapi.service.ApiService;
 import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import com.hangeulbada.domain.user.service.UserService;
-import com.hangeulbada.domain.workbookset.dto.QuestionResponseDto;
 import com.hangeulbada.domain.workbookset.entity.IncorrectAnswerTag;
 import com.hangeulbada.domain.workbookset.repository.IncorrectAnswerTagRepository;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
@@ -35,20 +35,15 @@ public class AssignmentService {
 
     public SpecificAssignmentDTO getAssignment(String studentId, String workbookId) {
         Assignment assignment = assignmentRepository.findLatestByStudentIdAndWorkbookId(studentId, workbookId);
-        List<String> questions = new ArrayList<>();
-        for (QuestionResponseDto q : questionService.getQuestionsByWorkbookId(workbookId)) {
-            questions.add(q.getContent());
-        }
         SpecificAssignmentDTO specificAssignmentDTO = mapper.map(assignment, SpecificAssignmentDTO.class);
         specificAssignmentDTO.setStudentName((userService.getUserById(studentId).getName()));
-        specificAssignmentDTO.setQuestions(questions);
         specificAssignmentDTO.setImgS3Url(assignment.getImgS3Url());
         specificAssignmentDTO.setScore(assignment.getScore());
         return specificAssignmentDTO;
     }
 
 
-    public List<ScoreDTO> requestOCR(OCRRequest ocrRequest, String studentId){
+    public AssignmentSavedDto requestOCR(OCRRequest ocrRequest, String studentId){
         String wId = ocrRequest.getWorkbookId();
         List<String> questionIds = workbookService.getQuestionIdsByWorkbookId(wId);
 
@@ -89,16 +84,19 @@ public class AssignmentService {
         Assignment newAssignment = mapper.map(assignmentDto, Assignment.class);
         newAssignment.setStudentId(studentId);
         newAssignment.setWorkbookId(wId);
-        newAssignment.setQuestions(questions);
         newAssignment.setScore(score);
         newAssignment.setSubmitDate(LocalDateTime.now());
         newAssignment.setImgS3Url(ocrRequest.getImageName());
-        assignmentRepository.save(newAssignment);
+
+        int idx=0;
+        for(AssignmentContent content: newAssignment.getAnswers()){
+            content.setQuestionFull(questions.get(idx++));
+        }
+        Assignment savedAssignment = assignmentRepository.save(newAssignment);
 
         //오답 태그 저장
         saveIncorrectTag(assignmentDto, qIdMap, studentId);
-
-        return scoreDTOS;
+        return AssignmentSavedDto.builder().id(savedAssignment.getId()).scoreDtoList(scoreDTOS).build();
     }
 
 

@@ -10,6 +10,7 @@ import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
 import com.hangeulbada.domain.workbookset.exception.WorkbookException;
 import com.hangeulbada.domain.workbookset.repository.QuestionRepository;
 import com.hangeulbada.domain.workbookset.repository.WorkbookRepository;
+import com.hangeulbada.domain.workbookset.service.IncorrectAnswerService;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final TTSService ttsService;
     private final ApiService apiService;
     private final WorkbookService workbookService;
+    private final IncorrectAnswerService incorrectAnswerService;
 
     @Override
     public List<QuestionResponseDto> getQuestionsByWorkbookId(String workbookId) {
@@ -70,6 +72,7 @@ public class QuestionServiceImpl implements QuestionService {
                 workbookService.updateWorkbookDifficulty(w.getId());
             }
         }
+        incorrectAnswerService.deleteRecordByQuestionId(questionId);
         ttsService.deleteFileFromS3(question.getAudioFilePath());
         questionRepository.deleteById(questionId);
     }

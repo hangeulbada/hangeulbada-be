@@ -104,7 +104,7 @@ public class GroupService{
     }
 
     public List<GroupAttendResponse> getAttendGroup(String studentId){
-        List<Group> groups = groupRepository.findByStudentIdsContaining(studentId);
+        List<Group> groups = groupRepository.findByStudentIdsContainingAndGroupCodeIsNotNull(studentId);
         return groups.stream()
                 .map(group -> mapper.map(group, GroupAttendResponse.class))
                 .collect(Collectors.toList());
