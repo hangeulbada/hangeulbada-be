@@ -113,7 +113,7 @@ public class ApiServiceImpl implements ApiService {
                 log.info(responseDTO.toString());
                 return responseDTO;
             } else {
-                System.err.println("Error: " + response.getStatusCode() + " - " + response.getBody());
+                System.err.println("API 호출 중 오류 발생: " + response.getStatusCode() + " - " + response.getBody());
             }
         } catch (Exception e) {
             e.printStackTrace();
