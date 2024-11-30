@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AssignmentRepository extends MongoRepository<Assignment, String> {
     @Aggregation(pipeline = {
@@ -35,7 +36,7 @@ public interface AssignmentRepository extends MongoRepository<Assignment, String
     })
     List<AssignmentSummaryDto> getWorkbookAssignment(String studentId, String workbookId);
 
-    Assignment findAssignmentById(String assignmentId);
+    Optional<Assignment> findAssignmentById(String assignmentId);
 
     // 편의 메소드로 사용
     default Assignment findLatestByStudentIdAndWorkbookId(String studentId, String workbookId) {

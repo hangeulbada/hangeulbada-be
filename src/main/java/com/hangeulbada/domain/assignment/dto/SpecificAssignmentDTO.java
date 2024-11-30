@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @Schema(description = "SpecificAssignmentDTO")
 public class SpecificAssignmentDTO {
+    private String id;
     private String studentName;
+    private String workbookId;
     private List<AssignmentContentDto> answers; // 답안 관련
     private Integer score; //맞은 개수
     private String imgS3Url;
