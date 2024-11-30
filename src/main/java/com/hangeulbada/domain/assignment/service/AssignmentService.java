@@ -9,6 +9,7 @@ import com.hangeulbada.domain.group.dto.GroupAssignmentDTO;
 import com.hangeulbada.domain.ocr.dto.OCRRequest;
 import com.hangeulbada.domain.user.service.UserService;
 import com.hangeulbada.domain.workbookset.entity.IncorrectAnswerTag;
+import com.hangeulbada.domain.workbookset.exception.ResourceNotFoundException;
 import com.hangeulbada.domain.workbookset.repository.IncorrectAnswerTagRepository;
 import com.hangeulbada.domain.workbookset.service.QuestionService;
 import com.hangeulbada.domain.workbookset.service.WorkbookService;
@@ -126,7 +127,8 @@ public class AssignmentService {
     }
 
     public SpecificAssignmentDTO getAssignmentById(String id, String studentId){
-        SpecificAssignmentDTO assignmentDTO = mapper.map(assignmentRepository.findAssignmentById(id), SpecificAssignmentDTO.class);
+        Assignment assignment = assignmentRepository.findAssignmentById(id).orElseThrow(()-> new ResourceNotFoundException("Assignment","id", id));
+        SpecificAssignmentDTO assignmentDTO = mapper.map(assignment, SpecificAssignmentDTO.class);
         assignmentDTO.setStudentName(userService.getUserById(studentId).getName());
         return assignmentDTO;
     }
