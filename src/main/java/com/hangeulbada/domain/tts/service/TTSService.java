@@ -94,18 +94,22 @@ public class TTSService {
         }
     }
     private String uploadFileToS3(InputStream inputStream, String fileName) {
-        try {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("audio/mpeg");
-            metadata.setContentLength(inputStream.available()); // 파일 크기 설정
+            try {
+                byte[] fileData = inputStream.readAllBytes(); // 전체 데이터를 읽어 byte 배열로 변환
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType("audio/mpeg");
+                metadata.setContentLength(fileData.length); // 파일 크기를 명시적으로 설정
 
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata));
-            String fileUrl = s3Client.getUrl(bucketName, fileName).toString();
-            return fileUrl;
-        } catch (Exception e) {
-            throw new S3Exception("파일 업로드 중 오류 발생");
+                // ByteArrayInputStream을 사용해 다시 InputStream으로 변환
+                try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(fileData)) {
+                    s3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayInputStream, metadata));
+                }
+                String fileUrl = s3Client.getUrl(bucketName, fileName).toString();
+                return fileUrl;
+            } catch (Exception e) {
+                throw new S3Exception("파일 업로드 중 오류 발생");
+            }
         }
-    }
     public static String extractFileName(String url) {
         if (url == null || url.isEmpty()) {
             return null;
